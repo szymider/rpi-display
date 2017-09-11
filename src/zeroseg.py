@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-import json
 import threading
 import time
-from urllib import urlopen
+import requests
 from datetime import datetime
 
 import RPi.GPIO as GPIO
@@ -18,11 +16,11 @@ def display_clock():
         minute = now.minute
         second = now.second
 
-        device.letter(1, 7, int(hour / 10))
+        device.letter(1, 7, hour // 10)
         device.letter(1, 6, hour % 10, True)
-        device.letter(1, 5, int(minute / 10))
+        device.letter(1, 5, minute // 10)
         device.letter(1, 4, minute % 10, True)
-        device.letter(1, 3, int(second / 10))
+        device.letter(1, 3, second // 10)
         device.letter(1, 2, second % 10)
 
         next_mode.wait(DISPLAY_RATE_CLOCK)
@@ -35,13 +33,13 @@ def display_date():
         month = now.month
         year = now.year - 2000
 
-        device.letter(1, 8, int(day / 10))
+        device.letter(1, 8, day // 10)
         device.letter(1, 7, day % 10)
         device.letter(1, 6, '-')
-        device.letter(1, 5, int(month / 10))
+        device.letter(1, 5, month // 10)
         device.letter(1, 4, month % 10)
         device.letter(1, 3, '-')
-        device.letter(1, 2, int(year / 10))
+        device.letter(1, 2, year // 10)
         device.letter(1, 1, year % 10)
 
         next_mode.wait(DISPLAY_RATE_DATE)
@@ -49,7 +47,7 @@ def display_date():
 
 def display_weather():
     while not next_mode.is_set():
-        device.write_text(1, update_weather.temperature + "*C" + update_weather.feelslike + "*C")
+        device.write_text(1, "{0}*C{1}*C".format(update_weather.temperature, update_weather.feelslike))
         device.letter(1, 5, 'C', True)
 
         next_mode.wait(DISPLAY_RATE_WEATHER)
@@ -57,12 +55,12 @@ def display_weather():
 
 def display_currency():
     while not next_mode.is_set():
-        device.write_text(1, " " + str(update_currency.eur) + " EUR")
-        device.letter(1, 7, update_currency.eur / 100, True)
+        device.write_text(1, " {:d} EUR".format(update_currency.eur))
+        device.letter(1, 7, update_currency.eur // 100, True)
         next_mode.wait(DISPLAY_RATE_CURRENCY)
         if not next_mode.is_set():
-            device.write_text(1, " " + str(update_currency.usd) + " USD")
-            device.letter(1, 7, update_currency.usd / 100, True)
+            device.write_text(1, " {:d} USD".format(update_currency.usd))
+            device.letter(1, 7, update_currency.usd // 100, True)
             next_mode.wait(DISPLAY_RATE_CURRENCY)
 
 
@@ -73,7 +71,7 @@ def display_instagram():
 
         followers = update_instagram.followers
         j = len(followers) - 1
-        for digitPosition in xrange(len(followers)):
+        for digitPosition in range(len(followers)):
             device.letter(1, digitPosition + 1, followers[j])
             j -= 1
 
@@ -81,47 +79,53 @@ def display_instagram():
 
 
 def update_weather():
-    print "Weather loading"
-    response = urlopen(URL_WEATHER)
-    data = json.loads(response.read())
-    update_weather.temperature = str(int(round(data["current_observation"]["temp_c"], 0)))
-    update_weather.feelslike = str(int(round(float(data["current_observation"]["feelslike_c"]), 0)))
-    print "Weather updated"
+    try:
+        response = requests.get(url=URL_WEATHER)
+        data = response.json()
+        update_weather.temperature = str(int(round(data["current_observation"]["temp_c"], 0)))
+        update_weather.feelslike = str(int(round(float(data["current_observation"]["feelslike_c"]), 0)))
+        print("Weather updated")
+    except requests.exceptions.RequestException as e:
+        print(e)
 
     threading.Timer(UPDATE_RATE_WEATHER, update_weather).start()
 
 
 def update_currency():
-    print "Currency loading"
-    response_eur = urlopen(URL_EUR)
-    data_eur = json.loads(response_eur.read())
-    update_currency.eur = int(round(data_eur["rates"][0]["mid"], 2) * 100)
+    try:
+        response_eur = requests.get(url=URL_EUR)
+        data_eur = response_eur.json()
+        update_currency.eur = int(round(data_eur["rates"][0]["mid"], 2) * 100)
 
-    response_usd = urlopen(URL_USD)
-    data_usd = json.loads(response_usd.read())
-    update_currency.usd = int(round(data_usd["rates"][0]["mid"], 2) * 100)
-    print "Currency updated"
+        response_usd = requests.get(url=URL_USD)
+        data_usd = response_usd.json()
+        update_currency.usd = int(round(data_usd["rates"][0]["mid"], 2) * 100)
+        print("Currency updated")
+    except requests.exceptions.RequestException as e:
+        print(e)
 
     threading.Timer(UPDATE_RATE_CURRENCY, update_currency).start()
 
 
 def update_instagram():
-    print "Instagram followers loading"
-    response = urlopen(URL_IG)
-    data = json.loads(response.read())
-    update_instagram.followers = str(data["user"]["followed_by"]["count"])
-    print "Instagram followers updated"
+    try:
+        response = requests.get(url=URL_IG)
+        data = response.json()
+        update_instagram.followers = str(data["user"]["followed_by"]["count"])
+        print("Instagram followers updated")
+    except requests.exceptions.RequestException as e:
+        print(e)
 
     threading.Timer(UPDATE_RATE_IG, update_instagram).start()
 
 
 def brightness_flow():
     while not brightness_flow_mode.is_set():
-        for intensity in xrange(1, 16, 1):
+        for intensity in range(1, 16):
             device.brightness(intensity)
             brightness_flow_mode.wait(0.1)
         brightness_flow_mode.wait(0.1)
-        for intensity in xrange(15, 0, -1):
+        for intensity in range(15, 0, -1):
             device.brightness(intensity)
             brightness_flow_mode.wait(0.1)
         brightness_flow_mode.wait(0.1)
@@ -131,17 +135,10 @@ def brightness_flow():
 def brightness_dependent_on_time():
     while not brightness_dependent_on_time_mode.is_set():
         hour = datetime.now().hour
-        if hour <= 7:
-            level = 1
-        elif hour <= 11:
-            level = 3
-        elif hour <= 15:
-            level = 5
-        elif hour <= 18:
-            level = 3
-        else:
-            level = 1
-        device.brightness(level)
+        for hour_threshold in sorted(HOURS.keys()):
+            if hour <= hour_threshold:
+                device.brightness(HOURS[hour_threshold])
+                break
         brightness_dependent_on_time_mode.wait(300)
     brightness_dependent_on_time_mode.clear()
 

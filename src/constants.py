@@ -1,4 +1,4 @@
-# Button pins
+# Buttons GPIO pins
 BUTTON_1 = 17
 BUTTON_2 = 26
 
@@ -26,3 +26,12 @@ URL_IG = "https://www.instagram.com/aredos/?__a=1"
 
 # Dead period of time after clicking a button
 WAIT_TIME_AFTER_CLICK = 0.4
+
+# Brightness
+HOURS = {
+    7: 1,
+    11: 3,
+    15: 5,
+    18: 3,
+    24: 1
+}
