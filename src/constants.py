@@ -1,9 +1,11 @@
+from collections import OrderedDict
+
 # Buttons GPIO pins
 BUTTON_1 = 17
 BUTTON_2 = 26
 
-# Clock
-DISPLAY_RATE_CLOCK = 1
+# Clock (slightly lower than a second to avoid skipping a second once in a while)
+DISPLAY_RATE_CLOCK = 0.995
 
 # Date
 DISPLAY_RATE_DATE = 5
@@ -27,7 +29,7 @@ URL_IG = "https://www.instagram.com/aredos/?__a=1"
 # Dead period of time after clicking a button
 WAIT_TIME_AFTER_CLICK = 0.4
 
-# Brightness
+# Brightness (hour : brightness)
 HOURS = {
     7: 1,
     11: 3,
@@ -35,3 +37,4 @@ HOURS = {
     18: 3,
     24: 1
 }
+HOURS = OrderedDict(sorted(HOURS.items(), key=lambda item: item[0]))

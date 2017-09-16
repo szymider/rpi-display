@@ -12,16 +12,7 @@ from constants import *
 def display_clock():
     while not next_mode.is_set():
         now = datetime.now()
-        hour = now.hour
-        minute = now.minute
-        second = now.second
-
-        device.letter(1, 7, hour // 10)
-        device.letter(1, 6, hour % 10, True)
-        device.letter(1, 5, minute // 10)
-        device.letter(1, 4, minute % 10, True)
-        device.letter(1, 3, second // 10)
-        device.letter(1, 2, second % 10)
+        device.write_text(1, " {:%H%M%S}".format(now.time()), dots=[3, 5])
 
         next_mode.wait(DISPLAY_RATE_CLOCK)
 
@@ -29,51 +20,32 @@ def display_clock():
 def display_date():
     while not next_mode.is_set():
         now = datetime.now()
-        day = now.day
-        month = now.month
-        year = now.year - 2000
-
-        device.letter(1, 8, day // 10)
-        device.letter(1, 7, day % 10)
-        device.letter(1, 6, '-')
-        device.letter(1, 5, month // 10)
-        device.letter(1, 4, month % 10)
-        device.letter(1, 3, '-')
-        device.letter(1, 2, year // 10)
-        device.letter(1, 1, year % 10)
+        device.write_text(1, "{:%d-%m-%y}".format(now.date()))
 
         next_mode.wait(DISPLAY_RATE_DATE)
 
 
 def display_weather():
     while not next_mode.is_set():
-        device.write_text(1, "{0}*C{1}*C".format(update_weather.temperature, update_weather.feelslike))
-        device.letter(1, 5, 'C', True)
+        device.write_text(1, "{0}*C{1}*C".format(update_weather.temperature, update_weather.feelslike), dots=[4])
 
         next_mode.wait(DISPLAY_RATE_WEATHER)
 
 
 def display_currency():
     while not next_mode.is_set():
-        device.write_text(1, " {:d} EUR".format(update_currency.eur))
-        device.letter(1, 7, update_currency.eur // 100, True)
+        device.write_text(1, " {:d} EUR".format(update_currency.eur), dots=[6])
+
         next_mode.wait(DISPLAY_RATE_CURRENCY)
         if not next_mode.is_set():
-            device.write_text(1, " {:d} USD".format(update_currency.usd))
-            device.letter(1, 7, update_currency.usd // 100, True)
+            device.write_text(1, " {:d} USD".format(update_currency.usd), dots=[6])
+
             next_mode.wait(DISPLAY_RATE_CURRENCY)
 
 
 def display_instagram():
     while not next_mode.is_set():
-        device.letter(1, 8, 'I')
-        device.letter(1, 7, 'G')
-
-        followers = update_instagram.followers
-        j = len(followers) - 1
-        for digitPosition in range(len(followers)):
-            device.letter(1, digitPosition + 1, followers[j])
-            j -= 1
+        device.write_text(1, "IG{:>6}".format(update_instagram.followers))
 
         next_mode.wait(DISPLAY_RATE_IG)
 
@@ -135,7 +107,7 @@ def brightness_flow():
 def brightness_dependent_on_time():
     while not brightness_dependent_on_time_mode.is_set():
         hour = datetime.now().hour
-        for hour_threshold in sorted(HOURS.keys()):
+        for hour_threshold in HOURS.keys():
             if hour <= hour_threshold:
                 device.brightness(HOURS[hour_threshold])
                 break
