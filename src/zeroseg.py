@@ -54,8 +54,8 @@ def update_weather():
     try:
         response = requests.get(url=URL_WEATHER)
         data = response.json()
-        update_weather.temperature = str(int(round(data["current_observation"]["temp_c"], 0)))
-        update_weather.feelslike = str(int(round(float(data["current_observation"]["feelslike_c"]), 0)))
+        update_weather.temperature = str(int(round(data["current_observation"]["temp_c"])))
+        update_weather.feelslike = str(int(round(float(data["current_observation"]["feelslike_c"]))))
         print("Weather updated")
     except requests.exceptions.RequestException as e:
         print(e)
