@@ -1,6 +1,7 @@
 import threading
 import time
 import requests
+import subprocess
 from datetime import datetime
 
 import RPi.GPIO as GPIO
@@ -117,8 +118,7 @@ def brightness_dependent_on_time():
 
 def button_listener():
     global current_mode
-    global thread_flow
-    global thread_dependent_on_time
+    global thread_flow, thread_dependent_on_time
     while True:
         if not GPIO.input(BUTTON_1):
             if thread_dependent_on_time.isAlive():
@@ -143,12 +143,16 @@ def button_listener():
             time.sleep(0.15)
 
 
+def get_ip():
+    return subprocess.run('hostname -I', shell=True, check=True, stdout=subprocess.PIPE).stdout.decode('UTF-8').rstrip()
+
+
 def init():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(BUTTON_1, GPIO.IN)
     GPIO.setup(BUTTON_2, GPIO.IN)
 
-    device.write_text(1, "LOADING.")
+    device.show_message2(text=".127...0.2...2.3.", delay=0.7)
 
     thread_buttons = threading.Thread(target=button_listener)
     thread_buttons.daemon = True
