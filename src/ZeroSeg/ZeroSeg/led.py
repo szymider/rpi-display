@@ -404,9 +404,10 @@ class sevensegment(device):
         # message scrolls off to the left completely.
         text += ' ' * (self._cascaded * 8 + 1)
         for pos, value in enumerate(text[:-1]):
-            if value == '.':
+            if value == '.' and (pos > 0 and text[pos - 1] != '.'):
                 continue
             time.sleep(delay)
             self.scroll_right(redraw=False)
-            self._buffer[0] = self._DIGITS.get(value, self._UNDEFINED) | ((text[pos + 1] == '.') << 7)
+            self._buffer[0] = self._DIGITS.get(value, self._UNDEFINED) \
+                | ((text[pos + 1] == '.' and value != '.') << 7)
             self.flush()
