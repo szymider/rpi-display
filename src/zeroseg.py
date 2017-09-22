@@ -13,7 +13,7 @@ from constants import *
 def display_clock():
     while not next_mode.is_set():
         now = datetime.now()
-        device.write_text(1, " {:%H%M%S}".format(now.time()), dots=[3, 5])
+        device.write_text(1, " {:%H%M%S}".format(now.time()), dots=(3, 5))
 
         next_mode.wait(DISPLAY_RATE_CLOCK)
 
