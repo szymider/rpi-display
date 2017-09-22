@@ -152,7 +152,7 @@ def init():
     GPIO.setup(BUTTON_1, GPIO.IN)
     GPIO.setup(BUTTON_2, GPIO.IN)
 
-    device.show_message2(text=get_ip(), delay=1)
+    device.show_message_dots(text=get_ip(), delay=1)
 
     thread_buttons = threading.Thread(target=button_listener)
     thread_buttons.daemon = True

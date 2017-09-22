@@ -368,20 +368,6 @@ class sevensegment(device):
 
         self.flush()
 
-    def write_text2(self, deviceId, text):
-        """
-        Outputs the text (as near as possible) on the specific device. If
-        text is larger than 8 characters, then an OverflowError is raised.
-        Puts dots on specific positions entered in dots
-        """
-        assert 0 <= deviceId < self._cascaded, "Invalid deviceId: {0}".format(deviceId)
-        if len(text.replace('.', '')) > 8:
-            raise OverflowError('{0} too large for display'.format(text))
-        for pos, char in enumerate(text.ljust(8)[::-1]):
-            self.letter(deviceId, constants.MAX7219_REG_DIGIT0 + pos, char, redraw=False)
-
-        self.flush()
-
     def show_message(self, text, delay=0.4):
         """
         Transitions the text message across the devices from left-to-right
@@ -395,7 +381,7 @@ class sevensegment(device):
             self._buffer[0] = self._DIGITS.get(value, self._UNDEFINED)
             self.flush()
 
-    def show_message2(self, text, delay=0.4):
+    def show_message_dots(self, text, delay=0.4):
         """
         Transitions the text message across the devices from left-to-right
         Puts dots directly on previous character, not as an individual char
@@ -403,11 +389,11 @@ class sevensegment(device):
         # Add some spaces on (same number as cascaded devices) so that the
         # message scrolls off to the left completely.
         text += ' ' * (self._cascaded * 8 + 1)
-        for pos, value in enumerate(text[:-1]):
-            if value == '.' and (pos > 0 and text[pos - 1] != '.'):
+        for pos, char in enumerate(text[:-1]):
+            if char == '.' and (pos > 0 and text[pos - 1] != '.'):
                 continue
             time.sleep(delay)
             self.scroll_right(redraw=False)
-            self._buffer[0] = self._DIGITS.get(value, self._UNDEFINED) \
-                | ((text[pos + 1] == '.' and value != '.') << 7)
+            self._buffer[0] = self._DIGITS.get(char, self._UNDEFINED) \
+                | ((text[pos + 1] == '.' and char != '.') << 7)
             self.flush()
