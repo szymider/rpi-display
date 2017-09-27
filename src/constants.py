@@ -13,7 +13,7 @@ DISPLAY_RATE_DATE = 5
 # Weather
 DISPLAY_RATE_WEATHER = 5
 UPDATE_RATE_WEATHER = 300
-URL_WEATHER = "http://api.wunderground.com/api/ec90855c0d358c5f/conditions/q/pws:IKRAKW27.json"
+URL_WEATHER = "http://api.wunderground.com/api/ec90855c0d358c5f/conditions/q/pws:IKRAKOW17.json"
 
 # Currency
 DISPLAY_RATE_CURRENCY = 3
