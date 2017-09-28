@@ -31,7 +31,6 @@ def display_weather():
         next_mode.wait(DISPLAY_RATE_WEATHER)
 
 
-# TODO: pack this code within while to one function
 def display_currency():
     while not next_mode.is_set():
         device.write_text(1, " {:d} EUR".format(update_currency.eur), dots=[6])
