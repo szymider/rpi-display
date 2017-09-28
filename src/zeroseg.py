@@ -7,6 +7,7 @@ from datetime import datetime
 import RPi.GPIO as GPIO
 import ZeroSeg.led as led
 
+import messages
 from constants import *
 
 
@@ -24,7 +25,7 @@ def display_date():
         next_mode.wait(DISPLAY_RATE_DATE)
 
 
-# TODO: change displaying temperature to consider negative temperature values
+# TODO: change displaying temperature to consider negative temperature values and also one digit...
 def display_weather():
     while not next_mode.is_set():
         device.write_text(1, "{0}*C{1}*C".format(update_weather.temperature, update_weather.feelslike), dots=[4])
@@ -111,19 +112,36 @@ def brightness_dependent_on_time():
     brightness_dependent_on_time_mode.clear()
 
 
+def start_flow():
+    global thread_flow
+    brightness_dependent_on_time_mode.set()
+    thread_flow = threading.Thread(target=brightness_flow)
+    thread_flow.start()
+
+
+def start_time_dependent():
+    global thread_dependent_on_time
+    brightness_flow_mode.set()
+    thread_dependent_on_time = threading.Thread(target=brightness_dependent_on_time)
+    thread_dependent_on_time.start()
+
+
+def wait_for_message_display():
+    while not next_mode.is_set():
+        pass
+    next_mode.clear()
+
+
+# TODO: make gpio event to recognize click by any time
 def button_listener():
     global current_mode
     global thread_flow, thread_dependent_on_time
     while True:
         if not GPIO.input(BUTTON_1):
-            if thread_dependent_on_time.isAlive():
-                brightness_dependent_on_time_mode.set()
-                thread_flow = threading.Thread(target=brightness_flow)
-                thread_flow.start()
-            else:
-                brightness_flow_mode.set()
-                thread_dependent_on_time = threading.Thread(target=brightness_dependent_on_time)
-                thread_dependent_on_time.start()
+            if messages.messages_to_read:
+                while not GPIO.input(BUTTON_1):
+                    print("im in a while xd")
+                    show_message()
             time.sleep(WAIT_TIME_AFTER_CLICK)
         elif not GPIO.input(BUTTON_2):
             if current_mode < 5:
@@ -138,6 +156,19 @@ def button_listener():
             time.sleep(0.15)
 
 
+def show_message():
+    global current_mode
+    device.clear()
+    message = messages.messages_to_read.popleft()
+    remember_mode = current_mode
+    current_mode = 0
+    next_mode.set()
+    device.show_message_dots(text=message['text'].upper())
+    current_mode = remember_mode
+    next_mode.set()
+    messages.set_read_id(message['id'])
+
+
 def get_ip():
     return subprocess.run('hostname -I', shell=True, check=True, stdout=subprocess.PIPE).stdout.decode('UTF-8').rstrip()
 
@@ -147,7 +178,7 @@ def init():
     GPIO.setup(BUTTON_1, GPIO.IN)
     GPIO.setup(BUTTON_2, GPIO.IN)
 
-    device.show_message_dots(text=get_ip(), delay=1)
+    # device.show_message_dots(text=get_ip(), delay=0.5)
     device.write_text(1, "LOADING", dots=[1])
 
     thread_buttons = threading.Thread(target=button_listener)
@@ -157,10 +188,12 @@ def init():
     update_weather()
     update_currency()
     update_instagram()
+    messages.load_messages()
     device.clear()
 
 
 modes = {
+    0: wait_for_message_display,
     1: display_clock,
     2: display_date,
     3: display_weather,

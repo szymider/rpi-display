@@ -24,14 +24,12 @@ def load_messages():
     if new_messages:
         messages_to_read.extend(new_messages)
         last_received_id = new_messages[-1]['id']
-    else:
-        print("No new messages")
     threading.Timer(10, load_messages).start()
 
 
-last_read_id = last_received_id = get_last_id()
+last_received_id = get_last_id()
 messages_to_read = deque()
-load_messages()
 
-while True:
-    time.sleep(60)
+
+def set_read_id(id):
+    requests.put(url=get_messages_url('read'), data={'latestReadId': id})
