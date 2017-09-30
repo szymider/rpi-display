@@ -1,7 +1,7 @@
 import threading
 import time
 import requests
-import subprocess
+from subprocess import run as run_command
 from datetime import datetime
 
 import RPi.GPIO as GPIO
@@ -137,13 +137,14 @@ def button_listener():
     global current_mode
     global thread_flow, thread_dependent_on_time
     while True:
-        if not GPIO.input(BUTTON_1):
+        if GPIO.event_detected(BUTTON_1):
             if messages.messages_to_read:
-                while not GPIO.input(BUTTON_1):
-                    print("im in a while xd")
-                    show_message()
+                message = messages.messages_to_read.popleft()
+                show_message(message)
+            else:
+                show_no_new_messages()
             time.sleep(WAIT_TIME_AFTER_CLICK)
-        elif not GPIO.input(BUTTON_2):
+        elif GPIO.event_detected(BUTTON_2):
             if current_mode < 5:
                 current_mode += 1
             else:
@@ -153,13 +154,12 @@ def button_listener():
             time.sleep(WAIT_TIME_AFTER_CLICK)
             next_mode.clear()
         else:
-            time.sleep(0.15)
+            time.sleep(0.25)
 
 
-def show_message():
+def show_message(message):
     global current_mode
     device.clear()
-    message = messages.messages_to_read.popleft()
     remember_mode = current_mode
     current_mode = 0
     next_mode.set()
@@ -169,14 +169,28 @@ def show_message():
     messages.set_read_id(message['id'])
 
 
+def show_no_new_messages():
+    global current_mode
+    device.clear()
+    remember_mode = current_mode
+    current_mode = 0
+    next_mode.set()
+    device.write_text(1, "NO MESS", dots=[0])
+    time.sleep(2)
+    current_mode = remember_mode
+    next_mode.set()
+
+
 def get_ip():
-    return subprocess.run('hostname -I', shell=True, check=True, stdout=subprocess.PIPE).stdout.decode('UTF-8').rstrip()
+    return run_command('hostname -I', shell=True, check=True, stdout=subprocess.PIPE).stdout.decode('UTF-8').rstrip()
 
 
 def init():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(BUTTON_1, GPIO.IN)
     GPIO.setup(BUTTON_2, GPIO.IN)
+    GPIO.add_event_detect(BUTTON_1, GPIO.RISING, bouncetime=300)
+    GPIO.add_event_detect(BUTTON_2, GPIO.RISING, bouncetime=300)
 
     # device.show_message_dots(text=get_ip(), delay=0.5)
     device.write_text(1, "LOADING", dots=[1])

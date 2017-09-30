@@ -31,5 +31,5 @@ last_received_id = get_last_id()
 messages_to_read = deque()
 
 
-def set_read_id(id):
-    requests.put(url=get_messages_url('read'), data={'latestReadId': id})
+def set_read_id(read):
+    requests.put(url=get_messages_url('read'), data={'latestReadId': read})
