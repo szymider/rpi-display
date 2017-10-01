@@ -11,7 +11,7 @@ def get_messages_url(resource):
 def get_last_id():
     response = requests.get(url=get_messages_url('read'))
     data = response.json()
-    return int(data['latestReadId'])
+    return int(data['lastReadId'])
 
 
 def get_new_messages():
@@ -29,7 +29,7 @@ def load_messages():
 
 def set_read_id(read):
     requests.put(url=get_messages_url('read'), headers={'Content-Type': 'application/json'},
-                 json={'latestReadId': read})
+                 json={'lastReadId': read})
 
 
 last_received_id = get_last_id()
