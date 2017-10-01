@@ -25,10 +25,10 @@ def display_date():
         next_mode.wait(DISPLAY_RATE_DATE)
 
 
-# TODO: change displaying temperature to consider negative temperature values and also one digit...
+# TODO: change displaying temperature to consider negative temperature values
 def display_weather():
     while not next_mode.is_set():
-        device.write_text(1, "{0}*C{1}*C".format(update_weather.temperature, update_weather.feelslike), dots=[4])
+        device.write_text(1, "{:2d}*C{:2d}*C".format(update_weather.temperature, update_weather.feelslike), dots=[4])
         next_mode.wait(DISPLAY_RATE_WEATHER)
 
 
@@ -54,8 +54,8 @@ def get_response_json(url):
 def update_weather():
     try:
         data = get_response_json(url=URL_WEATHER)
-        update_weather.temperature = str(int(round(data["current_observation"]["temp_c"])))
-        update_weather.feelslike = str(int(round(float(data["current_observation"]["feelslike_c"]))))
+        update_weather.temperature = int(round(data["current_observation"]["temp_c"]))
+        update_weather.feelslike = int(round(float(data["current_observation"]["feelslike_c"])))
         print("Weather updated")
     except requests.exceptions.RequestException as e:
         print(e)
