@@ -191,7 +191,7 @@ def init():
     GPIO.add_event_detect(BUTTON_1, GPIO.RISING, bouncetime=250)
     GPIO.add_event_detect(BUTTON_2, GPIO.RISING, bouncetime=250)
 
-    # device.show_message_dots(text=get_ip(), delay=0.5)
+    device.show_message_dots(text=get_ip(), delay=0.5)
     device.write_text(1, "LOADING", dots=[1])
 
     thread_buttons = threading.Thread(target=button_listener)
