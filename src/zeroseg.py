@@ -132,7 +132,6 @@ def wait_for_message_display():
     next_mode.clear()
 
 
-# TODO: make gpio event to recognize click by any time
 def button_listener():
     global current_mode
     global thread_flow, thread_dependent_on_time
@@ -141,6 +140,7 @@ def button_listener():
             if messages.messages_to_read:
                 message = messages.messages_to_read.popleft()
                 show_message(message)
+                messages.set_read_id(message['id'])
             else:
                 show_no_new_messages()
             time.sleep(WAIT_TIME_AFTER_CLICK)
@@ -166,7 +166,6 @@ def show_message(message):
     device.show_message_dots(text=message['text'].upper())
     current_mode = remember_mode
     next_mode.set()
-    messages.set_read_id(message['id'])
 
 
 def show_no_new_messages():
@@ -175,7 +174,7 @@ def show_no_new_messages():
     remember_mode = current_mode
     current_mode = 0
     next_mode.set()
-    device.write_text(1, "NO MESS", dots=[0])
+    device.write_text(1, "NO MSGS", dots=[0])
     time.sleep(2)
     current_mode = remember_mode
     next_mode.set()

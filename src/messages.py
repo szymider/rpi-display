@@ -27,9 +27,10 @@ def load_messages():
     threading.Timer(10, load_messages).start()
 
 
+def set_read_id(read):
+    requests.put(url=get_messages_url('read'), headers={'Content-Type': 'application/json'},
+                 json={'latestReadId': read})
+
+
 last_received_id = get_last_id()
 messages_to_read = deque()
-
-
-def set_read_id(read):
-    requests.put(url=get_messages_url('read'), data={'latestReadId': read})
