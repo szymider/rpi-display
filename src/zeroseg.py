@@ -1,7 +1,7 @@
 import threading
 import time
 import requests
-from subprocess import run as run_command
+import subprocess
 from datetime import datetime
 
 import RPi.GPIO as GPIO
@@ -163,7 +163,7 @@ def show_message(message):
     remember_mode = current_mode
     current_mode = 0
     next_mode.set()
-    device.show_message_dots(text=message['text'].upper())
+    device.show_message_dots(text=message['text'].upper(), mw=True)
     current_mode = remember_mode
     next_mode.set()
 
@@ -174,22 +174,22 @@ def show_no_new_messages():
     remember_mode = current_mode
     current_mode = 0
     next_mode.set()
-    device.write_text(1, "NO MSGS", dots=[0])
+    device.write_text(1, "NO MSGS", mw=True)
     time.sleep(2)
     current_mode = remember_mode
     next_mode.set()
 
 
 def get_ip():
-    return run_command('hostname -I', shell=True, check=True, stdout=subprocess.PIPE).stdout.decode('UTF-8').rstrip()
+    return subprocess.run('hostname -I', shell=True, check=True, stdout=subprocess.PIPE).stdout.decode('UTF-8').rstrip()
 
 
 def init():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(BUTTON_1, GPIO.IN)
     GPIO.setup(BUTTON_2, GPIO.IN)
-    GPIO.add_event_detect(BUTTON_1, GPIO.RISING, bouncetime=300)
-    GPIO.add_event_detect(BUTTON_2, GPIO.RISING, bouncetime=300)
+    GPIO.add_event_detect(BUTTON_1, GPIO.RISING, bouncetime=250)
+    GPIO.add_event_detect(BUTTON_2, GPIO.RISING, bouncetime=250)
 
     # device.show_message_dots(text=get_ip(), delay=0.5)
     device.write_text(1, "LOADING", dots=[1])

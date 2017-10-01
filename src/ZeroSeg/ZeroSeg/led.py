@@ -222,6 +222,8 @@ class sevensegment(device):
     _RADIX = {8: 'o', 10: 'f', 16: 'x'}
     # Some letters cannot be represented by 7 segments, so dictionary lookup
     # will default to _UNDEFINED (an underscore) instead.
+    _M = ('Μ', 'Ϸ')
+    _W = ('Ŵ', 'Ƿ')
     _DIGITS = {
         ' ': 0x00,
         '-': 0x01,
@@ -248,7 +250,10 @@ class sevensegment(device):
         'j': 0x18,
         # 'k': cant represent
         'l': 0x06,
-        # 'm': cant represent
+        # < m
+        _M[0]: 0x66,
+        _M[1]: 0x72,
+        # > m
         'n': 0x15,
         'o': 0x1d,
         'p': 0x67,
@@ -258,7 +263,10 @@ class sevensegment(device):
         't': 0x0f,
         'u': 0x1c,
         'v': 0x1c,
-        # 'w': cant represent
+        # < w
+        _W[0]: 0x1e,
+        _W[1]: 0x3c,
+        # > w
         # 'x': cant represent
         'y': 0x3b,
         'z': 0x6d,
@@ -350,20 +358,26 @@ class sevensegment(device):
 
         self.flush()
 
-    def write_text(self, deviceId, text, dots=None):
+    def get_replaced_mw(self, text):
+        return text.replace('M', "".join(self._M)).replace('W', "".join(self._W))
+
+    def write_text(self, deviceId, text, dots=None, mw=False):
         """
         Outputs the text (as near as possible) on the specific device. If
         text is larger than 8 characters, then an OverflowError is raised.
         Puts dots on specific positions entered in dots
         """
         assert 0 <= deviceId < self._cascaded, "Invalid deviceId: {0}".format(deviceId)
+        if mw:
+            text = self.get_replaced_mw(text)
         if len(text) > 8:
             raise OverflowError('{0} too large for display'.format(text))
+        text_inv = text.ljust(8)[::-1]
         if dots is None:
-            for pos, char in enumerate(text.ljust(8)[::-1]):
+            for pos, char in enumerate(text_inv):
                 self.letter(deviceId, constants.MAX7219_REG_DIGIT0 + pos, char, redraw=False)
         else:
-            for pos, char in enumerate(text.ljust(8)[::-1]):
+            for pos, char in enumerate(text_inv):
                 self.letter(deviceId, constants.MAX7219_REG_DIGIT0 + pos, char, dot=(pos in dots), redraw=False)
 
         self.flush()
@@ -381,13 +395,15 @@ class sevensegment(device):
             self._buffer[0] = self._DIGITS.get(value, self._UNDEFINED)
             self.flush()
 
-    def show_message_dots(self, text, delay=0.4):
+    def show_message_dots(self, text, delay=0.4, mw=False):
         """
         Transitions the text message across the devices from left-to-right
         Puts dots directly on previous character, not as an individual char
         """
         # Add some spaces on (same number as cascaded devices) so that the
         # message scrolls off to the left completely.
+        if mw:
+            text = self.get_replaced_mw(text)
         text += ' ' * (self._cascaded * 8 + 1)
         for pos, char in enumerate(text[:-1]):
             if char == '.' and (pos > 0 and text[pos - 1] != '.'):
@@ -395,5 +411,5 @@ class sevensegment(device):
             time.sleep(delay)
             self.scroll_right(redraw=False)
             self._buffer[0] = self._DIGITS.get(char, self._UNDEFINED) \
-                | ((text[pos + 1] == '.' and char != '.') << 7)
+                              | ((text[pos + 1] == '.' and char != '.') << 7)
             self.flush()

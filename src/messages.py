@@ -24,7 +24,7 @@ def load_messages():
     if new_messages:
         messages_to_read.extend(new_messages)
         last_received_id = new_messages[-1]['id']
-    threading.Timer(10, load_messages).start()
+    threading.Timer(20, load_messages).start()
 
 
 def set_read_id(read):
