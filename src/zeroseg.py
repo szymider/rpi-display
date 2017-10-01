@@ -25,7 +25,7 @@ def display_date():
         next_mode.wait(DISPLAY_RATE_DATE)
 
 
-# TODO: change displaying temperature to consider negative temperature values
+# FIXME: case when temp is negative double digit
 def display_weather():
     while not next_mode.is_set():
         device.write_text(1, "{:2d}*C{:2d}*C".format(update_weather.temperature, update_weather.feelslike), dots=[4])
@@ -191,7 +191,8 @@ def init():
     GPIO.add_event_detect(BUTTON_1, GPIO.RISING, bouncetime=250)
     GPIO.add_event_detect(BUTTON_2, GPIO.RISING, bouncetime=250)
 
-    device.show_message_dots(text=get_ip(), delay=0.5)
+    ip = get_ip()
+    device.show_message_dots(text=ip)
     device.write_text(1, "LOADING", dots=[1])
 
     thread_buttons = threading.Thread(target=button_listener)
@@ -202,6 +203,8 @@ def init():
     update_currency()
     update_instagram()
     messages.load_messages()
+    requests.put(url="http://api.adamklimko.pl/raspberry/ip", headers={'Content-Type': 'application/json'},
+                 json={"ip": ip})
     device.clear()
 
 
