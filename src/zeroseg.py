@@ -128,7 +128,7 @@ def start_time_dependent():
 
 def wait_for_message_display():
     while not next_mode.is_set():
-        pass
+        time.sleep(0.4)
     next_mode.clear()
 
 
