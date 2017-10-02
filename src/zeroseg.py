@@ -163,7 +163,7 @@ def show_message(message):
     remember_mode = current_mode
     current_mode = 0
     next_mode.set()
-    device.show_message_dots(text=message['text'].upper(), mw=True)
+    device.show_message(text=message['text'].upper(), mw=True)
     current_mode = remember_mode
     next_mode.set()
 
@@ -192,7 +192,7 @@ def init():
     GPIO.add_event_detect(BUTTON_2, GPIO.RISING, bouncetime=250)
 
     ip = get_ip()
-    device.show_message_dots(text=ip)
+    device.show_message(text=ip)
     device.write_text(1, "LOADING", dots=[1])
 
     thread_buttons = threading.Thread(target=button_listener)

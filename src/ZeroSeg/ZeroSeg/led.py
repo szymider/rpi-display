@@ -382,20 +382,7 @@ class sevensegment(device):
 
         self.flush()
 
-    def show_message(self, text, delay=0.4):
-        """
-        Transitions the text message across the devices from left-to-right
-        """
-        # Add some spaces on (same number as cascaded devices) so that the
-        # message scrolls off to the left completely.
-        text += ' ' * self._cascaded * 8
-        for value in text:
-            time.sleep(delay)
-            self.scroll_right(redraw=False)
-            self._buffer[0] = self._DIGITS.get(value, self._UNDEFINED)
-            self.flush()
-
-    def show_message_dots(self, text, delay=0.4, mw=False):
+    def show_message(self, text, delay=0.4, mw=False):
         """
         Transitions the text message across the devices from left-to-right
         Puts dots directly on previous character, not as an individual char
