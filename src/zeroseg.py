@@ -54,11 +54,12 @@ def get_response_json(url):
 def update_weather():
     try:
         data = get_response_json(url=URL_WEATHER)
+    except requests.exceptions.RequestException as e:
+        print(e)
+    else:
         update_weather.temperature = int(round(data["current_observation"]["temp_c"]))
         update_weather.feelslike = int(round(float(data["current_observation"]["feelslike_c"])))
         print("Weather updated")
-    except requests.exceptions.RequestException as e:
-        print(e)
 
     threading.Timer(UPDATE_RATE_WEATHER, update_weather).start()
 
@@ -66,13 +67,13 @@ def update_weather():
 def update_currency():
     try:
         data_eur = get_response_json(url=URL_EUR)
-        update_currency.eur = int(round(data_eur["rates"][0]["mid"], 2) * 100)
-
         data_usd = get_response_json(url=URL_USD)
-        update_currency.usd = int(round(data_usd["rates"][0]["mid"], 2) * 100)
-        print("Currency updated")
     except requests.exceptions.RequestException as e:
         print(e)
+    else:
+        update_currency.eur = int(round(data_eur["rates"][0]["mid"], 2) * 100)
+        update_currency.usd = int(round(data_usd["rates"][0]["mid"], 2) * 100)
+        print("Currency updated")
 
     threading.Timer(UPDATE_RATE_CURRENCY, update_currency).start()
 
@@ -80,10 +81,11 @@ def update_currency():
 def update_instagram():
     try:
         data = get_response_json(url=URL_IG)
-        update_instagram.followers = str(data["user"]["followed_by"]["count"])
-        print("Instagram followers updated")
     except requests.exceptions.RequestException as e:
         print(e)
+    else:
+        update_instagram.followers = str(data["user"]["followed_by"]["count"])
+        print("Instagram followers updated")
 
     threading.Timer(UPDATE_RATE_IG, update_instagram).start()
 
