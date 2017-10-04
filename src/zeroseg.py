@@ -9,6 +9,7 @@ import ZeroSeg.led as led
 
 import messages
 import update
+import ip
 from constants import *
 
 
@@ -144,10 +145,6 @@ def show_no_new_messages():
     next_mode.set()
 
 
-def get_ip():
-    return subprocess.run('hostname -I', shell=True, check=True, stdout=subprocess.PIPE).stdout.decode('UTF-8').rstrip()
-
-
 def init():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(BUTTON_1, GPIO.IN)
@@ -155,8 +152,7 @@ def init():
     GPIO.add_event_detect(BUTTON_1, GPIO.RISING, bouncetime=250)
     GPIO.add_event_detect(BUTTON_2, GPIO.RISING, bouncetime=250)
 
-    ip = get_ip()
-    device.show_message(text=ip)
+    device.show_message(text=ip.ip)
     device.write_text(1, "LOADING", dots=[1])
 
     thread_buttons = threading.Thread(target=button_listener)
@@ -165,8 +161,8 @@ def init():
 
     update.update_all_modes()
     messages.load_messages()
-    requests.put(url="http://api.adamklimko.pl/raspberry/ip", headers={'Content-Type': 'application/json'},
-                 json={"ip": ip})
+    ip.send_ip()
+
     device.clear()
 
 
