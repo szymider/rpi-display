@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 import ZeroSeg.led as led
 
 import messages
+import update
 from constants import *
 
 
@@ -28,66 +29,27 @@ def display_date():
 # FIXME: case when temp is negative double digit
 def display_weather():
     while not next_mode.is_set():
-        device.write_text(1, "{:2d}*C{:2d}*C".format(update_weather.temperature, update_weather.feelslike), dots=[4])
+        device.write_text(1, "{:2d}*C{:2d}*C".format(update.temperature, update.feelslike), dots=[4])
         next_mode.wait(DISPLAY_RATE_WEATHER)
 
 
 def display_currency():
     while not next_mode.is_set():
-        device.write_text(1, " {:d} EUR".format(update_currency.eur), dots=[6])
+        device.write_text(1, " {:d} EUR".format(update.eur), dots=[6])
         next_mode.wait(DISPLAY_RATE_CURRENCY)
         if not next_mode.is_set():
-            device.write_text(1, " {:d} USD".format(update_currency.usd), dots=[6])
+            device.write_text(1, " {:d} USD".format(update.usd), dots=[6])
             next_mode.wait(DISPLAY_RATE_CURRENCY)
 
 
 def display_instagram():
     while not next_mode.is_set():
-        device.write_text(1, "IG{:>6}".format(update_instagram.followers))
+        device.write_text(1, "IG{:>6}".format(update.followers))
         next_mode.wait(DISPLAY_RATE_IG)
 
 
 def get_response_json(url):
     return requests.get(url=url).json()
-
-
-def update_weather():
-    try:
-        data = get_response_json(url=URL_WEATHER)
-    except requests.exceptions.RequestException as e:
-        print(e)
-    else:
-        update_weather.temperature = int(round(data["current_observation"]["temp_c"]))
-        update_weather.feelslike = int(round(float(data["current_observation"]["feelslike_c"])))
-        print("Weather updated")
-
-    threading.Timer(UPDATE_RATE_WEATHER, update_weather).start()
-
-
-def update_currency():
-    try:
-        data_eur = get_response_json(url=URL_EUR)
-        data_usd = get_response_json(url=URL_USD)
-    except requests.exceptions.RequestException as e:
-        print(e)
-    else:
-        update_currency.eur = int(round(data_eur["rates"][0]["mid"], 2) * 100)
-        update_currency.usd = int(round(data_usd["rates"][0]["mid"], 2) * 100)
-        print("Currency updated")
-
-    threading.Timer(UPDATE_RATE_CURRENCY, update_currency).start()
-
-
-def update_instagram():
-    try:
-        data = get_response_json(url=URL_IG)
-    except requests.exceptions.RequestException as e:
-        print(e)
-    else:
-        update_instagram.followers = str(data["user"]["followed_by"]["count"])
-        print("Instagram followers updated")
-
-    threading.Timer(UPDATE_RATE_IG, update_instagram).start()
 
 
 def brightness_flow():
@@ -201,9 +163,7 @@ def init():
     thread_buttons.daemon = True
     thread_buttons.start()
 
-    update_weather()
-    update_currency()
-    update_instagram()
+    update.update_all_modes()
     messages.load_messages()
     requests.put(url="http://api.adamklimko.pl/raspberry/ip", headers={'Content-Type': 'application/json'},
                  json={"ip": ip})
@@ -230,8 +190,7 @@ thread_flow = threading.Thread(target=brightness_flow)
 thread_dependent_on_time = threading.Thread(target=brightness_dependent_on_time)
 thread_dependent_on_time.start()
 
-init()
-
 if __name__ == '__main__':
+    init()
     while True:
         modes[current_mode]()
