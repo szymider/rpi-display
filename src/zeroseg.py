@@ -14,39 +14,34 @@ from constants import *
 
 
 def display_clock():
-    while not next_mode.is_set():
-        now = datetime.now()
-        device.write_text(1, " {:%H%M%S}".format(now.time()), dots=(3, 5))
-        next_mode.wait(DISPLAY_RATE_CLOCK)
+    now = datetime.now()
+    device.write_text(1, " {:%H%M%S}".format(now.time()), dots=(3, 5))
+    next_mode.wait(DISPLAY_RATE_CLOCK)
 
 
 def display_date():
-    while not next_mode.is_set():
-        now = datetime.now()
-        device.write_text(1, "{:%d-%m-%y}".format(now.date()))
-        next_mode.wait(DISPLAY_RATE_DATE)
+    now = datetime.now()
+    device.write_text(1, "{:%d-%m-%y}".format(now.date()))
+    next_mode.wait(DISPLAY_RATE_DATE)
 
 
 # FIXME: case when temp is negative double digit
 def display_weather():
-    while not next_mode.is_set():
-        device.write_text(1, "{:2d}*C{:2d}*C".format(update.temperature, update.feelslike), dots=[4])
-        next_mode.wait(DISPLAY_RATE_WEATHER)
+    device.write_text(1, "{:2d}*C{:2d}*C".format(update.temperature, update.feelslike), dots=[4])
+    next_mode.wait(DISPLAY_RATE_WEATHER)
 
 
 def display_currency():
-    while not next_mode.is_set():
-        device.write_text(1, " {:d} EUR".format(update.eur), dots=[6])
+    device.write_text(1, " {:d} EUR".format(update.eur), dots=[6])
+    next_mode.wait(DISPLAY_RATE_CURRENCY)
+    if not next_mode.is_set():
+        device.write_text(1, " {:d} USD".format(update.usd), dots=[6])
         next_mode.wait(DISPLAY_RATE_CURRENCY)
-        if not next_mode.is_set():
-            device.write_text(1, " {:d} USD".format(update.usd), dots=[6])
-            next_mode.wait(DISPLAY_RATE_CURRENCY)
 
 
 def display_instagram():
-    while not next_mode.is_set():
-        device.write_text(1, "IG{:>6}".format(update.followers))
-        next_mode.wait(DISPLAY_RATE_IG)
+    device.write_text(1, "IG{:>6}".format(update.followers))
+    next_mode.wait(DISPLAY_RATE_IG)
 
 
 def get_response_json(url):
@@ -92,9 +87,7 @@ def start_time_dependent():
 
 
 def wait_for_message_display():
-    while not next_mode.is_set():
-        time.sleep(0.4)
-    next_mode.clear()
+    time.sleep(0.1)
 
 
 def button_listener():
@@ -109,6 +102,7 @@ def button_listener():
             else:
                 show_no_new_messages()
             time.sleep(WAIT_TIME_AFTER_CLICK)
+            next_mode.clear()
         elif GPIO.event_detected(BUTTON_2):
             if current_mode < 5:
                 current_mode += 1
@@ -119,7 +113,7 @@ def button_listener():
             time.sleep(WAIT_TIME_AFTER_CLICK)
             next_mode.clear()
         else:
-            time.sleep(0.25)
+            time.sleep(0.2)
 
 
 def show_message(message):
@@ -189,4 +183,5 @@ thread_dependent_on_time.start()
 if __name__ == '__main__':
     init()
     while True:
-        modes[current_mode]()
+        while not next_mode.is_set():
+            modes[current_mode]()
