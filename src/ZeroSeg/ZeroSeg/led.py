@@ -282,7 +282,6 @@ class sevensegment(device):
         'J': 0x38,
         # 'K': cant represent
         'L': 0x0e,
-        # 'M': cant represent
         'N': 0x76,
         'O': 0x7e,
         'P': 0x67,
@@ -292,7 +291,6 @@ class sevensegment(device):
         'T': 0x0f,
         'U': 0x3e,
         'V': 0x3e,
-        # 'W': cant represent
         # 'X': cant represent
         'Y': 0x3b,
         'Z': 0x6d,
