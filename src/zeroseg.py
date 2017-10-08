@@ -101,7 +101,7 @@ def button_listener():
                 show_message(message)
                 messages.set_read_id(message['id'])
             else:
-                show_no_new_messages()
+                show_message(None)
             time.sleep(WAIT_TIME_AFTER_CLICK)
         elif GPIO.event_detected(BUTTON_2):
             current_mode = next(mode)
@@ -112,20 +112,15 @@ def button_listener():
             time.sleep(0.2)
 
 
-def show_message(message):
+def show_message(message=None):
     global current_mode
     device.clear()
     remember_mode, current_mode = current_mode, 0
-    device.show_message(text=message['text'].upper(), mw=True)
-    current_mode = remember_mode
-
-
-def show_no_new_messages():
-    global current_mode
-    device.clear()
-    remember_mode, current_mode = current_mode, 0
-    device.write_text(1, "NO MSGS", mw=True)
-    time.sleep(2)
+    if message:
+        device.show_message(text=message['text'].upper(), mw=True)
+    else:
+        device.write_text(1, "NO MSGS", mw=True)
+        time.sleep(2)
     current_mode = remember_mode
 
 
@@ -143,7 +138,7 @@ def init():
     thread_buttons.daemon = True
     thread_buttons.start()
 
-    update.update_all_modes()
+    update.all_modes()
     messages.load_messages()
     ip.send_ip()
 
