@@ -12,7 +12,7 @@ usd = 0
 followers = 0
 
 
-def update_weather():
+def _weather():
     try:
         data = get_response_json(url=URL_WEATHER)
     except requests.exceptions.RequestException as e:
@@ -23,10 +23,10 @@ def update_weather():
         feelslike = int(round(float(data["current_observation"]["feelslike_c"])))
         print("Weather updated")
 
-    threading.Timer(UPDATE_RATE_WEATHER, update_weather).start()
+    threading.Timer(UPDATE_RATE_WEATHER, _weather).start()
 
 
-def update_currency():
+def _currency():
     try:
         data_eur = get_response_json(url=URL_EUR)
         data_usd = get_response_json(url=URL_USD)
@@ -38,10 +38,10 @@ def update_currency():
         usd = int(round(data_usd["rates"][0]["mid"], 2) * 100)
         print("Currency updated")
 
-    threading.Timer(UPDATE_RATE_CURRENCY, update_currency).start()
+    threading.Timer(UPDATE_RATE_CURRENCY, _currency).start()
 
 
-def update_instagram():
+def _instagram():
     try:
         data = get_response_json(url=URL_IG)
     except requests.exceptions.RequestException as e:
@@ -51,10 +51,10 @@ def update_instagram():
         followers = data["user"]["followed_by"]["count"]
         print("Instagram followers updated")
 
-    threading.Timer(UPDATE_RATE_IG, update_instagram).start()
+    threading.Timer(UPDATE_RATE_IG, _instagram).start()
 
 
-def update_all_modes():
-    update_weather()
-    update_currency()
-    update_instagram()
+def all_modes():
+    _weather()
+    _currency()
+    _instagram()

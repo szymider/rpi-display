@@ -2,7 +2,7 @@ import subprocess
 import requests
 
 
-def get_ip():
+def _get_ip():
     return subprocess.run('hostname -I', shell=True, check=True, stdout=subprocess.PIPE).stdout.decode('UTF-8').rstrip()
 
 
@@ -11,4 +11,4 @@ def send_ip():
                  json={"ip": ip})
 
 
-ip = get_ip()
+ip = _get_ip()
