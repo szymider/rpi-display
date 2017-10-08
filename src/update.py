@@ -9,7 +9,7 @@ feelslike = 0
 eur = 0
 usd = 0
 
-followers = ""
+followers = 0
 
 
 def update_weather():
@@ -48,7 +48,7 @@ def update_instagram():
         print(e)
     else:
         global followers
-        followers = str(data["user"]["followed_by"]["count"])
+        followers = data["user"]["followed_by"]["count"]
         print("Instagram followers updated")
 
     threading.Timer(UPDATE_RATE_IG, update_instagram).start()

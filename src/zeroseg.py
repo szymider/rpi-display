@@ -3,6 +3,7 @@ import time
 import requests
 import subprocess
 from datetime import datetime
+from itertools import cycle
 
 import RPi.GPIO as GPIO
 import ZeroSeg.led as led
@@ -40,7 +41,7 @@ def display_currency():
 
 
 def display_instagram():
-    device.write_text(1, "IG{:>6}".format(update.followers))
+    device.write_text(1, "IG{:>6d}".format(update.followers))
     next_mode.wait(DISPLAY_RATE_IG)
 
 
@@ -87,7 +88,7 @@ def start_time_dependent():
 
 
 def wait_for_message_display():
-    time.sleep(0.1)
+    time.sleep(0.2)
 
 
 def button_listener():
@@ -102,16 +103,11 @@ def button_listener():
             else:
                 show_no_new_messages()
             time.sleep(WAIT_TIME_AFTER_CLICK)
-            next_mode.clear()
         elif GPIO.event_detected(BUTTON_2):
-            if current_mode < 5:
-                current_mode += 1
-            else:
-                current_mode = 1
+            current_mode = next(mode)
             next_mode.set()
             device.clear()
             time.sleep(WAIT_TIME_AFTER_CLICK)
-            next_mode.clear()
         else:
             time.sleep(0.2)
 
@@ -119,24 +115,18 @@ def button_listener():
 def show_message(message):
     global current_mode
     device.clear()
-    remember_mode = current_mode
-    current_mode = 0
-    next_mode.set()
+    remember_mode, current_mode = current_mode, 0
     device.show_message(text=message['text'].upper(), mw=True)
     current_mode = remember_mode
-    next_mode.set()
 
 
 def show_no_new_messages():
     global current_mode
     device.clear()
-    remember_mode = current_mode
-    current_mode = 0
-    next_mode.set()
+    remember_mode, current_mode = current_mode, 0
     device.write_text(1, "NO MSGS", mw=True)
     time.sleep(2)
     current_mode = remember_mode
-    next_mode.set()
 
 
 def init():
@@ -169,6 +159,8 @@ modes = {
     5: display_instagram
 }
 current_mode = 1
+mode = cycle(range(1, 6))
+next(mode)
 
 next_mode = threading.Event()
 brightness_flow_mode = threading.Event()
@@ -185,3 +177,4 @@ if __name__ == '__main__':
     while True:
         while not next_mode.is_set():
             modes[current_mode]()
+        next_mode.clear()
