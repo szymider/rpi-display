@@ -1,5 +1,7 @@
 import subprocess
 import requests
+import auth
+from requests_utils import get_headers, get_api_resource_url
 
 
 def _get_ip():
@@ -7,8 +9,15 @@ def _get_ip():
 
 
 def send_ip():
-    requests.put(url="http://api.adamklimko.pl/raspberry/ip", headers={'Content-Type': 'application/json'},
-                 json={"ip": ip})
+    try:
+        response = requests.put(url=get_api_resource_url('ip'), headers=get_headers(json=True, auth=True),
+                                json={'ip': ip})
+    except requests.exceptions.RequestException as e:
+        print(e)
+        send_ip()
+    else:
+        if not auth.validate_response(response):
+            send_ip()
 
 
 ip = _get_ip()

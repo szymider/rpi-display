@@ -1,7 +1,7 @@
-from zeroseg import get_response_json
 import requests
 import threading
 from constants import *
+from requests_utils import get_response_json
 
 temperature = 0
 feelslike = 0

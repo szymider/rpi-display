@@ -8,9 +8,9 @@ from itertools import cycle
 import RPi.GPIO as GPIO
 import ZeroSeg.led as led
 
-import messages
 import update
 import ip
+import messages
 from constants import *
 
 
@@ -43,10 +43,6 @@ def display_currency():
 def display_instagram():
     device.write_text(1, "IG{:>6d}".format(update.followers))
     next_mode.wait(DISPLAY_RATE_IG)
-
-
-def get_response_json(url):
-    return requests.get(url=url).json()
 
 
 def brightness_flow():
@@ -99,7 +95,7 @@ def button_listener():
             if messages.messages_to_read:
                 message = messages.messages_to_read.popleft()
                 show_message(message)
-                messages.set_read_id(message['id'])
+                messages.send_read_id(message['id'])
             else:
                 show_message(None)
             time.sleep(WAIT_TIME_AFTER_CLICK)
