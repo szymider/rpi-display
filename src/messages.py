@@ -1,10 +1,8 @@
 import threading
 from collections import deque
-
 import auth
 import requests
 import time
-
 from requests_utils import get_headers, get_api_resource_url
 
 LOAD_NEW_MESSAGES_RATE = 20

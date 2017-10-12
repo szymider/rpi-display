@@ -120,6 +120,12 @@ def show_message(message=None):
     current_mode = remember_mode
 
 
+def setup_button_listener():
+    thread_buttons = threading.Thread(target=button_listener)
+    thread_buttons.daemon = True
+    thread_buttons.start()
+
+
 def init():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(BUTTON_1, GPIO.IN)
@@ -130,14 +136,10 @@ def init():
     device.show_message(text=ip.ip)
     device.write_text(1, "LOADING", dots=[1])
 
-    thread_buttons = threading.Thread(target=button_listener)
-    thread_buttons.daemon = True
-    thread_buttons.start()
-
+    setup_button_listener()
     update.all_modes()
     messages.load_messages()
     ip.send_ip()
-
     device.clear()
 
 
