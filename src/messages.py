@@ -33,8 +33,6 @@ def _get_new_messages():
                                 headers=get_headers(auth=True))
     except requests.exceptions.RequestException as e:
         print(e)
-        sleep(LOAD_NEW_MESSAGES_RATE)
-        return _get_new_messages()
     else:
         if auth.validate_response(response):
             return response.json()
