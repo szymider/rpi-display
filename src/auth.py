@@ -15,14 +15,11 @@ _token = get_token_from_file()
 
 
 def validate_response(response):
-    try:
-        length = response.headers['content-length']
-    except KeyError:
+    if response.status_code == requests.codes.ok:
         return True
     else:
-        if length == '0':
-            get_new_token()
-            save_token()
+        get_new_token()
+        save_token()
         return False
 
 
