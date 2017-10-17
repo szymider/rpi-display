@@ -1,4 +1,5 @@
 # Features
+* Message receiving service
 * Clock
 * Date
 * Temperature and feels like temperature
