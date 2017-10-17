@@ -19,8 +19,8 @@ def _weather():
         print(e)
     else:
         global temperature, feelslike
-        temperature = int(round(data["current_observation"]["temp_c"]))
-        feelslike = int(round(float(data["current_observation"]["feelslike_c"])))
+        temperature = int(round(data['current_observation']['temp_c']))
+        feelslike = int(round(float(data['current_observation']['feelslike_c'])))
         print("Weather updated")
 
     threading.Timer(UPDATE_RATE_WEATHER, _weather).start()
@@ -34,8 +34,8 @@ def _currency():
         print(e)
     else:
         global eur, usd
-        eur = int(round(data_eur["rates"][0]["mid"], 2) * 100)
-        usd = int(round(data_usd["rates"][0]["mid"], 2) * 100)
+        eur = int(round(data_eur['rates'][0]['mid'], 2) * 100)
+        usd = int(round(data_usd['rates'][0]['mid'], 2) * 100)
         print("Currency updated")
 
     threading.Timer(UPDATE_RATE_CURRENCY, _currency).start()
@@ -48,7 +48,7 @@ def _instagram():
         print(e)
     else:
         global followers
-        followers = data["user"]["followed_by"]["count"]
+        followers = data['user']['followed_by']['count']
         print("Instagram followers updated")
 
     threading.Timer(UPDATE_RATE_IG, _instagram).start()
