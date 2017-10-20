@@ -121,9 +121,7 @@ def show_message(message=None):
 
 
 def setup_button_listener():
-    thread_buttons = threading.Thread(target=button_listener)
-    thread_buttons.daemon = True
-    thread_buttons.start()
+    threading.Thread(target=button_listener, daemon=True).start()
 
 
 def init():
@@ -138,7 +136,7 @@ def init():
 
     setup_button_listener()
     update.all_modes()
-    messages.load_messages()
+    messages.setup_messages_service()
     ip.send_ip()
     device.clear()
 

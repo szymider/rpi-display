@@ -42,11 +42,16 @@ def _get_new_messages():
 
 def load_messages():
     global messages_to_read, last_received_id
-    new_messages = _get_new_messages()
-    if new_messages:
-        messages_to_read.extend(new_messages)
-        last_received_id = new_messages[-1]['id']
-    threading.Timer(LOAD_NEW_MESSAGES_RATE, load_messages).start()
+    while True:
+        new_messages = _get_new_messages()
+        if new_messages:
+            messages_to_read.extend(new_messages)
+            last_received_id = new_messages[-1]['id']
+        time.sleep(LOAD_NEW_MESSAGES_RATE)
+
+
+def setup_messages_service():
+    threading.Thread(target=load_messages, daemon=True)
 
 
 def send_read_id(read):
