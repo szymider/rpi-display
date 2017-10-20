@@ -51,7 +51,7 @@ def load_messages():
 
 
 def setup_messages_service():
-    threading.Thread(target=load_messages, daemon=True)
+    threading.Thread(target=load_messages, daemon=True).start()
 
 
 def send_read_id(read):
