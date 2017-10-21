@@ -1,13 +1,13 @@
 import threading
 import time
 import requests
-import subprocess
 from datetime import datetime
 from itertools import cycle
 
 import RPi.GPIO as GPIO
 import ZeroSeg.led as led
 
+import events
 import update
 import ip
 import messages
@@ -17,68 +17,68 @@ from constants import *
 def display_clock():
     now = datetime.now()
     device.write_text(1, " {:%H%M%S}".format(now.time()), dots=(3, 5))
-    next_mode.wait(DISPLAY_RATE_CLOCK)
+    events.change_mode.wait(DISPLAY_RATE_CLOCK)
 
 
 def display_date():
     now = datetime.now()
     device.write_text(1, "{:%d-%m-%y}".format(now.date()))
-    next_mode.wait(DISPLAY_RATE_DATE)
+    events.change_mode.wait(DISPLAY_RATE_DATE)
 
 
 # FIXME: case when temp is negative double digit
 def display_weather():
     device.write_text(1, "{:2d}*C{:2d}*C".format(update.temperature, update.feelslike), dots=[4])
-    next_mode.wait(DISPLAY_RATE_WEATHER)
+    events.change_mode.wait(DISPLAY_RATE_WEATHER)
 
 
 def display_currency():
     device.write_text(1, " {:d} EUR".format(update.eur), dots=[6])
-    next_mode.wait(DISPLAY_RATE_CURRENCY)
-    if not next_mode.is_set():
+    events.change_mode.wait(DISPLAY_RATE_CURRENCY)
+    if not change_mode.is_set():
         device.write_text(1, " {:d} USD".format(update.usd), dots=[6])
-        next_mode.wait(DISPLAY_RATE_CURRENCY)
+        eventschange_mode.wait(DISPLAY_RATE_CURRENCY)
 
 
 def display_instagram():
     device.write_text(1, "IG{:>6d}".format(update.followers))
-    next_mode.wait(DISPLAY_RATE_IG)
+    events.change_mode.wait(DISPLAY_RATE_IG)
 
 
 def brightness_flow():
-    while not brightness_flow_mode.is_set():
+    while not events.brightness_flow_mode.is_set():
         for intensity in range(1, 16):
             device.brightness(intensity)
-            brightness_flow_mode.wait(0.1)
-        brightness_flow_mode.wait(0.05)
+            events.brightness_flow_mode.wait(0.1)
+        events.brightness_flow_mode.wait(0.05)
         for intensity in range(15, 0, -1):
             device.brightness(intensity)
-            brightness_flow_mode.wait(0.1)
-        brightness_flow_mode.wait(0.05)
-    brightness_flow_mode.clear()
+            events.brightness_flow_mode.wait(0.1)
+        events.brightness_flow_mode.wait(0.05)
+    events.brightness_flow_mode.clear()
 
 
 def brightness_dependent_on_time():
-    while not brightness_dependent_on_time_mode.is_set():
+    while not events.brightness_dependent_on_time_mode.is_set():
         hour = datetime.now().hour
         for hour_threshold in HOURS.keys():
             if hour <= hour_threshold:
                 device.brightness(HOURS[hour_threshold])
                 break
-        brightness_dependent_on_time_mode.wait(300)
-    brightness_dependent_on_time_mode.clear()
+        events.brightness_dependent_on_time_mode.wait(300)
+    events.brightness_dependent_on_time_mode.clear()
 
 
 def start_flow():
     global thread_flow
-    brightness_dependent_on_time_mode.set()
+    events.brightness_dependent_on_time_mode.set()
     thread_flow = threading.Thread(target=brightness_flow)
     thread_flow.start()
 
 
 def start_time_dependent():
     global thread_dependent_on_time
-    brightness_flow_mode.set()
+    events.brightness_flow_mode.set()
     thread_dependent_on_time = threading.Thread(target=brightness_dependent_on_time)
     thread_dependent_on_time.start()
 
@@ -94,14 +94,17 @@ def button_listener():
         if GPIO.event_detected(BUTTON_1):
             if messages.messages_to_read:
                 message = messages.messages_to_read.popleft()
+                start_time_dependent()
                 show_message(message)
+                if messages.messages_to_read:
+                    start_flow()
                 messages.send_read_id(message['id'])
             else:
                 show_message(None)
             time.sleep(WAIT_TIME_AFTER_CLICK)
         elif GPIO.event_detected(BUTTON_2):
             current_mode = next(mode)
-            next_mode.set()
+            events.change_mode.set()
             device.clear()
             time.sleep(WAIT_TIME_AFTER_CLICK)
         else:
@@ -153,10 +156,6 @@ current_mode = 1
 mode = cycle(range(1, 6))
 next(mode)
 
-next_mode = threading.Event()
-brightness_flow_mode = threading.Event()
-brightness_dependent_on_time_mode = threading.Event()
-
 device = led.sevensegment(cascaded=2)
 
 thread_flow = threading.Thread(target=brightness_flow)
@@ -166,6 +165,6 @@ thread_dependent_on_time.start()
 if __name__ == '__main__':
     init()
     while True:
-        while not next_mode.is_set():
+        while not events.change_mode.is_set():
             modes[current_mode]()
-        next_mode.clear()
+        events.change_mode.clear()
