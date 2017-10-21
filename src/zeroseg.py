@@ -35,9 +35,9 @@ def display_weather():
 def display_currency():
     device.write_text(1, " {:d} EUR".format(update.eur), dots=[6])
     events.change_mode.wait(DISPLAY_RATE_CURRENCY)
-    if not change_mode.is_set():
+    if not events.change_mode.is_set():
         device.write_text(1, " {:d} USD".format(update.usd), dots=[6])
-        eventschange_mode.wait(DISPLAY_RATE_CURRENCY)
+        events.change_mode.wait(DISPLAY_RATE_CURRENCY)
 
 
 def display_instagram():
