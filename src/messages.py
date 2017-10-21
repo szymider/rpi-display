@@ -3,11 +3,11 @@ from collections import deque
 import auth
 import requests
 import time
-import zeroseg
 import events
+import threads
 from requests_utils import get_headers, get_api_resource_url
 
-LOAD_NEW_MESSAGES_RATE = 30
+LOAD_NEW_MESSAGES_RATE = 20
 
 
 def _get_messages_url(resource=''):
@@ -48,11 +48,9 @@ def load_messages():
         new_messages = _get_new_messages()
         if new_messages:
             messages_to_read.extend(new_messages)
-            # TODO: make event to do not interrupt standard brightness mode while reading message
-            if not zeroseg.thread_flow.isAlive():
-                zeroseg.start_flow()
+            if not threads.thread_flow.isAlive() and not events.reading_message.is_set():
+                threads.start_flow()
             last_received_id = new_messages[-1]['id']
-        print(events.brightness_flow_mode.is_set())
         time.sleep(LOAD_NEW_MESSAGES_RATE)
 
 

@@ -3,11 +3,11 @@ import time
 import requests
 from datetime import datetime
 from itertools import cycle
-
 import RPi.GPIO as GPIO
-import ZeroSeg.led as led
 
 import events
+import threads
+import display
 import update
 import ip
 import messages
@@ -45,59 +45,20 @@ def display_instagram():
     events.change_mode.wait(DISPLAY_RATE_IG)
 
 
-def brightness_flow():
-    while not events.brightness_flow_mode.is_set():
-        for intensity in range(1, 16):
-            device.brightness(intensity)
-            events.brightness_flow_mode.wait(0.1)
-        events.brightness_flow_mode.wait(0.05)
-        for intensity in range(15, 0, -1):
-            device.brightness(intensity)
-            events.brightness_flow_mode.wait(0.1)
-        events.brightness_flow_mode.wait(0.05)
-    events.brightness_flow_mode.clear()
-
-
-def brightness_dependent_on_time():
-    while not events.brightness_dependent_on_time_mode.is_set():
-        hour = datetime.now().hour
-        for hour_threshold in HOURS.keys():
-            if hour <= hour_threshold:
-                device.brightness(HOURS[hour_threshold])
-                break
-        events.brightness_dependent_on_time_mode.wait(300)
-    events.brightness_dependent_on_time_mode.clear()
-
-
-def start_flow():
-    global thread_flow
-    events.brightness_dependent_on_time_mode.set()
-    thread_flow = threading.Thread(target=brightness_flow)
-    thread_flow.start()
-
-
-def start_time_dependent():
-    global thread_dependent_on_time
-    events.brightness_flow_mode.set()
-    thread_dependent_on_time = threading.Thread(target=brightness_dependent_on_time)
-    thread_dependent_on_time.start()
-
-
 def wait_for_message_display():
     time.sleep(0.2)
 
 
 def button_listener():
     global current_mode
-    global thread_flow, thread_dependent_on_time
     while True:
         if GPIO.event_detected(BUTTON_1):
             if messages.messages_to_read:
                 message = messages.messages_to_read.popleft()
-                start_time_dependent()
+                threads.start_time_dependent()
                 show_message(message)
                 if messages.messages_to_read:
-                    start_flow()
+                    threads.start_flow()
                 messages.send_read_id(message['id'])
             else:
                 show_message(None)
@@ -112,8 +73,9 @@ def button_listener():
 
 
 def show_message(message=None):
-    global current_mode
+    events.reading_message.set()
     device.clear()
+    global current_mode
     remember_mode, current_mode = current_mode, 0
     if message:
         device.show_message(text=message['text'].upper(), mw=True)
@@ -121,6 +83,7 @@ def show_message(message=None):
         device.write_text(1, "NO MSGS", mw=True)
         time.sleep(2)
     current_mode = remember_mode
+    events.reading_message.clear()
 
 
 def setup_button_listener():
@@ -133,6 +96,11 @@ def init():
     GPIO.setup(BUTTON_2, GPIO.IN)
     GPIO.add_event_detect(BUTTON_1, GPIO.RISING, bouncetime=250)
     GPIO.add_event_detect(BUTTON_2, GPIO.RISING, bouncetime=250)
+
+    global device
+    device = display.device
+
+    threads.thread_dependent_on_time.start()
 
     device.show_message(text=ip.ip)
     device.write_text(1, "LOADING", dots=[1])
@@ -155,12 +123,6 @@ modes = {
 current_mode = 1
 mode = cycle(range(1, 6))
 next(mode)
-
-device = led.sevensegment(cascaded=2)
-
-thread_flow = threading.Thread(target=brightness_flow)
-thread_dependent_on_time = threading.Thread(target=brightness_dependent_on_time)
-thread_dependent_on_time.start()
 
 if __name__ == '__main__':
     init()
