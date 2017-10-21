@@ -17,7 +17,7 @@ WEATHER_API_KEY = 'ec90855c0d358c5f'
 URL_WEATHER = "http://api.wunderground.com/api/{}/conditions/q/pws:IKRAKOW17.json".format(WEATHER_API_KEY)
 
 # Currency
-DISPLAY_RATE_CURRENCY = 3
+DISPLAY_RATE_CURRENCY = 2
 UPDATE_RATE_CURRENCY = 300
 URL_EUR = "http://api.nbp.pl/api/exchangerates/rates/a/eur/?format=json"
 URL_USD = "http://api.nbp.pl/api/exchangerates/rates/a/usd/?format=json"
@@ -32,11 +32,11 @@ URL_IG = "https://www.instagram.com/{}/?__a=1".format(IG_USERNAME)
 WAIT_TIME_AFTER_CLICK = 0.4
 
 # Brightness (hour : brightness)
-HOURS = {
+_HOURS = {
     7: 1,
     11: 2,
     15: 3,
     18: 2,
     24: 1
 }
-HOURS = OrderedDict(sorted(HOURS.items(), key=lambda item: item[0]))
+HOURS = OrderedDict(sorted(_HOURS.items(), key=lambda item: item[0]))
