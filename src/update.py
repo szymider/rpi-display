@@ -23,7 +23,6 @@ def _weather():
             global temperature, feelslike
             temperature = int(round(data['current_observation']['temp_c']))
             feelslike = int(round(float(data['current_observation']['feelslike_c'])))
-            print("Weather updated")
         time.sleep(UPDATE_RATE_WEATHER)
 
 
@@ -38,7 +37,6 @@ def _currency():
             global eur, usd
             eur = int(round(data_eur['rates'][0]['mid'], 2) * 100)
             usd = int(round(data_usd['rates'][0]['mid'], 2) * 100)
-            print("Currency updated")
         time.sleep(UPDATE_RATE_CURRENCY)
 
 
@@ -51,7 +49,6 @@ def _instagram():
         else:
             global followers
             followers = data['user']['followed_by']['count']
-            print("Instagram followers updated")
         time.sleep(UPDATE_RATE_IG)
 
 
