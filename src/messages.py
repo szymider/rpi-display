@@ -64,7 +64,7 @@ def send_read_id(read):
                                 json={'lastReadId': read})
     except requests.exceptions.RequestException as e:
         print(e)
-        sleep(LOAD_NEW_MESSAGES_RATE)
+        time.sleep(LOAD_NEW_MESSAGES_RATE)
         send_read_id(read)
     else:
         if not auth.validate_response(response):
