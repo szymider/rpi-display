@@ -1,3 +1,4 @@
+import time
 import requests
 from login import get_login_request_body
 from requests_utils import get_api_resource_url
@@ -33,7 +34,12 @@ def get_auth_header():
 
 
 def get_new_token():
-    response = requests.post(url=get_api_resource_url('login'), json=get_login_request_body())
-    auth_token = response.headers['Authorization']
-    global _token
-    _token = auth_token
+    try:
+        response = requests.post(url=get_api_resource_url('login'), json=get_login_request_body())
+    except requests.exceptions.RequestException:
+        time.sleep(15)
+        get_new_token()
+    else:
+        auth_token = response['token']
+        global _token
+        _token = auth_token
