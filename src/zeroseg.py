@@ -1,16 +1,16 @@
 import threading
 import time
-import requests
 from datetime import datetime
 from itertools import cycle
+
 import RPi.GPIO as GPIO
 
-import events
-import threads
 import display
-import update
+import events
 import ip
 import messages
+import threads
+import update
 from constants import *
 
 
@@ -61,7 +61,7 @@ def button_listener():
                     threads.start_flow()
                 messages.send_read_id(message['id'])
             else:
-                show_message(None)
+                show_message()
             time.sleep(WAIT_TIME_AFTER_CLICK)
         elif GPIO.event_detected(BUTTON_2):
             current_mode = next(mode)
