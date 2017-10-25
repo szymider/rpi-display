@@ -4,7 +4,7 @@
 import time
 
 
-class constants(object):
+class Constants(object):
     MAX7219_REG_NOOP = 0x0
     MAX7219_REG_DIGIT0 = 0x1
     MAX7219_REG_DIGIT1 = 0x2
@@ -21,7 +21,7 @@ class constants(object):
     MAX7219_REG_DISPLAYTEST = 0xF
 
 
-class device(object):
+class Device(object):
     """
     Base class for handling multiple cascaded MAX7219 devices.
     Callers should generally pick the :py:class:`sevensegment` class
@@ -46,10 +46,10 @@ class device(object):
         self._spi.open(spi_bus, spi_device)
         self._vertical = vertical
 
-        self.command(constants.MAX7219_REG_SCANLIMIT, 7)  # show all 8 digits
-        self.command(constants.MAX7219_REG_DECODEMODE, 0)  # use matrix (not digits)
-        self.command(constants.MAX7219_REG_DISPLAYTEST, 0)  # no display test
-        self.command(constants.MAX7219_REG_SHUTDOWN, 1)  # not shutdown mode
+        self.command(Constants.MAX7219_REG_SCANLIMIT, 7)  # show all 8 digits
+        self.command(Constants.MAX7219_REG_DECODEMODE, 0)  # use matrix (not digits)
+        self.command(Constants.MAX7219_REG_DISPLAYTEST, 0)  # no display test
+        self.command(Constants.MAX7219_REG_SHUTDOWN, 1)  # not shutdown mode
         self.brightness(7)  # intensity: range: 0..15
         self.clear()
 
@@ -58,7 +58,7 @@ class device(object):
         Sends a specific register some data, replicated for all cascaded
         devices
         """
-        assert constants.MAX7219_REG_DECODEMODE <= register <= constants.MAX7219_REG_DISPLAYTEST
+        assert Constants.MAX7219_REG_DECODEMODE <= register <= Constants.MAX7219_REG_DISPLAYTEST
         self._write([register, data] * self._cascaded)
 
     def _write(self, data):
@@ -74,27 +74,27 @@ class device(object):
         value from that position for each of the cascaded devices.
         """
         for deviceId in range(self._cascaded):
-            yield position + constants.MAX7219_REG_DIGIT0
+            yield position + Constants.MAX7219_REG_DIGIT0
             yield buf[(deviceId * self.NUM_DIGITS) + position]
 
-    def clear(self, deviceId=None):
+    def clear(self, device_id=None):
         """
         Clears the buffer the given deviceId if specified (else clears all
         devices), and flushes.
         """
-        assert not deviceId or 0 <= deviceId < self._cascaded, "Invalid deviceId: {0}".format(deviceId)
+        assert not device_id or 0 <= device_id < self._cascaded, "Invalid deviceId: {0}".format(device_id)
 
-        if deviceId is None:
+        if device_id is None:
             start = 0
             end = self._cascaded
         else:
-            start = deviceId
-            end = deviceId + 1
+            start = device_id
+            end = device_id + 1
 
-        for deviceId in range(start, end):
+        for device_id in range(start, end):
             for position in range(self.NUM_DIGITS):
-                self.set_byte(deviceId,
-                              position + constants.MAX7219_REG_DIGIT0,
+                self.set_byte(device_id,
+                              position + Constants.MAX7219_REG_DIGIT0,
                               0, redraw=False)
 
         self.flush()
@@ -132,9 +132,9 @@ class device(object):
         issues / crashes if the USB power source is insufficient.
         """
         assert 0 <= intensity < 16, "Invalid brightness: {0}".format(intensity)
-        self.command(constants.MAX7219_REG_INTENSITY, intensity)
+        self.command(Constants.MAX7219_REG_INTENSITY, intensity)
 
-    def set_byte(self, deviceId, position, value, redraw=True):
+    def set_byte(self, device_id, position, value, redraw=True):
         """
         Low level mechanism to set a byte value in the buffer array. If redraw
         is not suppled, or set to True, will force a redraw of _all_ buffer
@@ -144,12 +144,12 @@ class device(object):
 
         Prefer to use the higher-level method calls in the subclasses below.
         """
-        assert 0 <= deviceId < self._cascaded, "Invalid deviceId: {0}".format(deviceId)
-        assert constants.MAX7219_REG_DIGIT0 <= position <= constants.MAX7219_REG_DIGIT7, "Invalid digit/column: {0}".format(
-            position)
+        assert 0 <= device_id < self._cascaded, "Invalid deviceId: {0}".format(device_id)
+        assert Constants.MAX7219_REG_DIGIT0 <= position <= Constants.MAX7219_REG_DIGIT7, "Invalid digit/column: {0}" \
+            .format(position)
         assert 0 <= value < 256, 'Value {0} outside range 0..255'.format(value)
 
-        offset = (deviceId * self.NUM_DIGITS) + position - constants.MAX7219_REG_DIGIT0
+        offset = (device_id * self.NUM_DIGITS) + position - Constants.MAX7219_REG_DIGIT0
         self._buffer[offset] = value
 
         if redraw:
@@ -210,7 +210,7 @@ class device(object):
             self.flush()
 
 
-class sevensegment(device):
+class Sevensegment(Device):
     """
     Implementation of MAX7219 devices cascaded with a series of seven-segment
     LEDs. It provides a convenient method to write a number to a given device
@@ -299,7 +299,7 @@ class sevensegment(device):
         '*': 0x63
     }
 
-    def letter(self, deviceId, position, char, dot=False, redraw=True):
+    def letter(self, device_id, position, char, dot=False, redraw=True):
         """
         Looks up the most appropriate character representation for char
         from the digits table, and writes that bitmap value into the buffer
@@ -307,51 +307,51 @@ class sevensegment(device):
         """
         assert dot in [0, 1, False, True]
         value = self._DIGITS.get(str(char), self._UNDEFINED) | (dot << 7)
-        self.set_byte(deviceId, position, value, redraw)
+        self.set_byte(device_id, position, value, redraw)
 
-    def write_number(self, deviceId, value, base=10, decimalPlaces=0,
-                     zeroPad=False, leftJustify=False):
+    def write_number(self, device_id, value, base=10, decimal_places=0,
+                     zero_pad=False, left_justify=False):
         """
         Formats the value according to the parameters supplied, and displays
         on the specified device. If the formatted number is larger than
         8 digits, then an OverflowError is raised.
         """
-        assert 0 <= deviceId < self._cascaded, "Invalid deviceId: {0}".format(deviceId)
+        assert 0 <= device_id < self._cascaded, "Invalid deviceId: {0}".format(device_id)
         assert base in self._RADIX, "Invalid base: {0}".format(base)
 
         # Magic up a printf format string
         size = self.NUM_DIGITS
-        formatStr = '%'
+        format_str = '%'
 
-        if zeroPad:
-            formatStr += '0'
+        if zero_pad:
+            format_str += '0'
 
-        if decimalPlaces > 0:
+        if decimal_places > 0:
             size += 1
 
-        if leftJustify:
+        if left_justify:
             size *= -1
 
-        formatStr = '{fmt}{size}.{dp}{type}'.format(
-            fmt=formatStr, size=size, dp=decimalPlaces,
+        format_str = '{fmt}{size}.{dp}{type}'.format(
+            fmt=format_str, size=size, dp=decimal_places,
             type=self._RADIX[base])
 
-        position = constants.MAX7219_REG_DIGIT7
-        strValue = formatStr % value
+        position = Constants.MAX7219_REG_DIGIT7
+        str_value = format_str % value
 
         # Go through each digit in the formatted string,
         # updating the buffer accordingly
-        for char in strValue:
+        for char in str_value:
 
-            if position < constants.MAX7219_REG_DIGIT0:
-                self.clear(deviceId)
-                raise OverflowError('{0} too large for display'.format(strValue))
+            if position < Constants.MAX7219_REG_DIGIT0:
+                self.clear(device_id)
+                raise OverflowError('{0} too large for display'.format(str_value))
 
             if char == '.':
                 continue
 
-            dp = (decimalPlaces > 0 and position == decimalPlaces + 1)
-            self.letter(deviceId, position, char, dot=dp, redraw=False)
+            dp = (decimal_places > 0 and position == decimal_places + 1)
+            self.letter(device_id, position, char, dot=dp, redraw=False)
             position -= 1
 
         self.flush()
@@ -359,13 +359,13 @@ class sevensegment(device):
     def get_replaced_mw(self, text):
         return text.replace('M', "".join(self._M)).replace('W', "".join(self._W))
 
-    def write_text(self, deviceId, text, dots=None, mw=False):
+    def write_text(self, device_id, text, dots=None, mw=False):
         """
         Outputs the text (as near as possible) on the specific device. If
         text is larger than 8 characters, then an OverflowError is raised.
         Puts dots on specific positions entered in dots
         """
-        assert 0 <= deviceId < self._cascaded, "Invalid deviceId: {0}".format(deviceId)
+        assert 0 <= device_id < self._cascaded, "Invalid deviceId: {0}".format(device_id)
         if mw:
             text = self.get_replaced_mw(text)
         if len(text) > 8:
@@ -373,10 +373,10 @@ class sevensegment(device):
         text_inv = text.ljust(8)[::-1]
         if dots is None:
             for pos, char in enumerate(text_inv):
-                self.letter(deviceId, constants.MAX7219_REG_DIGIT0 + pos, char, redraw=False)
+                self.letter(device_id, Constants.MAX7219_REG_DIGIT0 + pos, char, redraw=False)
         else:
             for pos, char in enumerate(text_inv):
-                self.letter(deviceId, constants.MAX7219_REG_DIGIT0 + pos, char, dot=(pos in dots), redraw=False)
+                self.letter(device_id, Constants.MAX7219_REG_DIGIT0 + pos, char, dot=(pos in dots), redraw=False)
 
         self.flush()
 
@@ -396,5 +396,5 @@ class sevensegment(device):
             time.sleep(delay)
             self.scroll_right(redraw=False)
             self._buffer[0] = self._DIGITS.get(char, self._UNDEFINED) \
-                              | ((text[pos + 1] == '.' and char != '.') << 7)
+                | ((text[pos + 1] == '.' and char != '.') << 7)
             self.flush()
