@@ -40,6 +40,6 @@ def get_new_token():
         time.sleep(15)
         get_new_token()
     else:
-        auth_token = response['token']
+        auth_token = response.json()['token']
         global _token
         _token = auth_token
