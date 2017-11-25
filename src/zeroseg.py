@@ -45,6 +45,10 @@ def display_instagram():
     events.change_mode.wait(DISPLAY_RATE_IG)
 
 
+def hide_display():
+    events.change_mode.wait(5)
+
+
 def wait_for_message_display():
     time.sleep(0.2)
 
@@ -118,10 +122,11 @@ modes = {
     2: display_date,
     3: display_weather,
     4: display_currency,
-    5: display_instagram
+    5: display_instagram,
+    6: hide_display
 }
 current_mode = 1
-mode = cycle(range(1, 6))
+mode = cycle(range(1, 7))
 next(mode)
 
 if __name__ == '__main__':
