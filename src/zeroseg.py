@@ -26,9 +26,8 @@ def display_date():
     events.change_mode.wait(DISPLAY_RATE_DATE)
 
 
-# FIXME: case when temp is negative double digit
 def display_weather():
-    device.write_text(1, "{:2d}*C{:2d}*C".format(update.temperature, update.feelslike), dots=[4])
+    device.write_text(1, "{:>6d}*C".format(update.temperature))
     events.change_mode.wait(DISPLAY_RATE_WEATHER)
 
 

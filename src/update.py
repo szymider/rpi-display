@@ -5,7 +5,6 @@ from constants import *
 from requests_utils import get_response_json
 
 temperature = 0
-feelslike = 0
 
 eur = 0
 usd = 0
@@ -20,9 +19,8 @@ def _weather():
         except requests.exceptions.RequestException as e:
             print(e)
         else:
-            global temperature, feelslike
+            global temperature
             temperature = int(round(data['current_observation']['temp_c']))
-            feelslike = int(round(float(data['current_observation']['feelslike_c'])))
         time.sleep(UPDATE_RATE_WEATHER)
 
 
