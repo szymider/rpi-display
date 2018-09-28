@@ -5,9 +5,10 @@ name = "pypi"
 
 [packages]
 ZeroSeg = {git = "https://github.com/aklimko/ZeroSeg.git", ref = "master", editable = true}
-requests = "*"
 "rpi.gpio" = "*"
 spidev = "*"
+requests = "*"
+vyper-config = "*"
 
 [dev-packages]
 
