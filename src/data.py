@@ -70,6 +70,6 @@ class Data:
             return
 
         json = response.json()
-        return {
+        self.ig = {
             'followers': json['data']['counts']['followed_by']
         }
