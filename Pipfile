@@ -9,6 +9,7 @@ ZeroSeg = {git = "https://github.com/aklimko/ZeroSeg.git", ref = "master", edita
 spidev = "*"
 requests = "*"
 vyper-config = "*"
+schedule = "*"
 
 [dev-packages]
 
