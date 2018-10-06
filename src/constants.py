@@ -14,19 +14,20 @@ DISPLAY_RATE_DATE = 5
 DISPLAY_RATE_WEATHER = 5
 UPDATE_RATE_WEATHER = 300
 WEATHER_API_KEY = 'ec90855c0d358c5f'
-URL_WEATHER = "http://api.wunderground.com/api/{}/conditions/q/pws:IKRAKOW17.json".format(WEATHER_API_KEY)
+'http://api.openweathermap.org/data/2.5/weather?id=3094802&units=metric&appid=ad78b22a5ed247bf2e408004e70749f3'
+URL_WEATHER = "https://api.darksky.net/forecast/53c130cb0ba43784f9a50ce6a0dda67f/50.0646501,19.9449799/?exclude=[minutely,hourly,daily,alerts,flags]".format(WEATHER_API_KEY)
 
 # Currency
 DISPLAY_RATE_CURRENCY = 2
 UPDATE_RATE_CURRENCY = 300
-URL_EUR = "http://api.nbp.pl/api/exchangerates/rates/a/eur/?format=json"
+URL_EUR = "http://free.currencyconverterapi.com/api/v5/convert?q=EUR_PLN&compact=y"
 URL_USD = "http://api.nbp.pl/api/exchangerates/rates/a/usd/?format=json"
 
 # Instagram followers
 DISPLAY_RATE_IG = 5
 UPDATE_RATE_IG = 360
 IG_USERNAME = 'aredos'
-URL_IG = "https://www.instagram.com/{}/?__a=1".format(IG_USERNAME)
+URL_IG = "https://api.instagram.com/v1/users/self/?access_token=".format("378297277.199edf5.309d8ff5741744fbbb1b997f037d3847")
 
 # Dead period of time after clicking a button
 WAIT_TIME_AFTER_CLICK = 0.4
