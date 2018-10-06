@@ -1,0 +1,46 @@
+startup:
+  show_ip: true
+
+mode:
+  clock:
+    enable: true
+    refresh: 0.995
+  date:
+    enable: true
+    refresh: 5
+  weather:
+    enable: true
+    refresh: 5
+    update: 300
+    provider: 'owm'
+    unit: 'C'
+    location: ''
+    api_key: ''
+  exchange_rate:
+    enable: true
+    refresh: 2
+    update: 300
+    types:
+      eur: pln
+      usd: pln
+  ig:
+    enable: true
+    refresh: 5
+    update: 360
+    api_key: ''
+
+buttons:
+  wait_time_after_click: 0.4
+
+brightness:
+  default_mode: 'standard'
+  standard:
+    default_value: 1
+    increase_on_click: 2
+  time_dependent:
+    hours:
+      7: 1
+      11: 2
+      15: 3
+      18: 2
+      24: 1
