@@ -20,23 +20,23 @@ def setup_config():
 def _setup_defaults():
     v.set_default('startup.show_ip', True)
 
-    v.set_default('mode.clock.enable', True)
-    v.set_default('mode.clock.refresh', 0.995)
+    v.set_default('modes.clock.enable', True)
+    v.set_default('modes.clock.refresh', 0.995)
 
-    v.set_default('mode.date.enable', True)
-    v.set_default('mode.date.refresh', 5)
+    v.set_default('modes.date.enable', True)
+    v.set_default('modes.date.refresh', 5)
 
-    v.set_default('mode.weather.enable', False)
-    v.set_default('mode.weather.refresh', 5)
-    v.set_default('mode.weather.update', 300)
+    v.set_default('modes.weather.enable', False)
+    v.set_default('modes.weather.refresh', 5)
+    v.set_default('modes.weather.update', 300)
 
-    v.set_default('mode.exchange_rate.enable', False)
-    v.set_default('mode.exchange_rate.refresh', 5)
-    v.set_default('mode.exchange_rate.update', 300)
+    v.set_default('modes.exchange_rate.enable', False)
+    v.set_default('modes.exchange_rate.refresh', 5)
+    v.set_default('modes.exchange_rate.update', 300)
 
-    v.set_default('mode.ig.enable', False)
-    v.set_default('mode.ig.refresh', 5)
-    v.set_default('mode.ig.update', 360)
+    v.set_default('modes.ig.enable', False)
+    v.set_default('modes.ig.refresh', 5)
+    v.set_default('modes.ig.update', 360)
 
     v.set_default('buttons.wait_time_after_click', 0.4)
 
@@ -86,7 +86,7 @@ class StartupCfg:
         return self.v.get_bool('startup.show_ip')
 
 
-class ModeCfg:
+class ModesCfg:
     def __init__(self):
         self.clock: ClockCfg = ClockCfg()
         self.date: DateCfg = DateCfg()
@@ -100,10 +100,10 @@ class ClockCfg:
         self._v = v
 
     def get_enable(self):
-        return self._v.get_bool('mode.clock.enable')
+        return self._v.get_bool('modes.clock.enable')
 
     def get_refresh(self):
-        return self._v.get_float('mode.clock.refresh')
+        return self._v.get_float('modes.clock.refresh')
 
 
 class DateCfg:
@@ -111,10 +111,10 @@ class DateCfg:
         self._v = v
 
     def get_enable(self):
-        return self._v.get_bool('mode.date.enable')
+        return self._v.get_bool('modes.date.enable')
 
     def get_refresh(self):
-        return self._v.get_float('mode.date.refresh')
+        return self._v.get_float('modes.date.refresh')
 
 
 class WeatherCfg(object):
@@ -122,25 +122,25 @@ class WeatherCfg(object):
         self._v = v
 
     def get_enable(self):
-        return self._v.get_bool('mode.weather.enable')
+        return self._v.get_bool('modes.weather.enable')
 
     def get_refresh(self):
-        return self._v.get_float('mode.weather.refresh')
+        return self._v.get_float('modes.weather.refresh')
 
     def get_update(self):
-        return self._v.get_float('mode.weather.update')
+        return self._v.get_float('modes.weather.update')
 
     def get_provider(self):
-        return self._v.get_string('mode.weather.provider')
+        return self._v.get_string('modes.weather.provider')
 
     def get_unit(self):
-        return self._v.get_string('mode.weather.unit')
+        return self._v.get_string('modes.weather.unit')
 
     def get_location(self):
-        return self._v.get_string('mode.weather.location')
+        return self._v.get_string('modes.weather.location')
 
     def get_api_key(self):
-        return self._v.get_string('mode.weather.api_key')
+        return self._v.get_string('modes.weather.api_key')
 
 
 class ExchangeRateCfg:
@@ -148,16 +148,16 @@ class ExchangeRateCfg:
         self._v = v
 
     def get_enable(self):
-        return self._v.get_bool('mode.exchange_rate.enable')
+        return self._v.get_bool('modes.exchange_rate.enable')
 
     def get_refresh(self):
-        return self._v.get_float('mode.exchange_rate.refresh')
+        return self._v.get_float('modes.exchange_rate.refresh')
 
     def get_update(self):
-        return self._v.get_float('mode.exchange_rate.update')
+        return self._v.get_float('modes.exchange_rate.update')
 
     def get_types(self):
-        return self._v.get('mode.exchange_rate.types')
+        return self._v.get('modes.exchange_rate.types')
 
 
 class IgCfg:
@@ -165,16 +165,16 @@ class IgCfg:
         self._v = v
 
     def get_enable(self):
-        return self._v.get_bool('mode.ig.enable')
+        return self._v.get_bool('modes.ig.enable')
 
     def get_refresh(self):
-        return self._v.get_float('mode.ig.refresh')
+        return self._v.get_float('modes.ig.refresh')
 
     def get_update(self):
-        return self._v.get_float('mode.ig.update')
+        return self._v.get_float('modes.ig.update')
 
     def get_api_key(self):
-        return self._v.get_string('mode.ig.api_key')
+        return self._v.get_string('modes.ig.api_key')
 
 
 class ButtonsCfg:

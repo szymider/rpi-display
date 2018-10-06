@@ -1,7 +1,7 @@
 startup:
   show_ip: true
 
-mode:
+modes:
   clock:
     enable: true
     refresh: 0.995
