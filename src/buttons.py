@@ -1,14 +1,11 @@
 import RPi.GPIO as GPIO
 
-import configuration
-
 
 class Buttons:
     def __init__(self, device, mode):
         self._left = 17
         self._right = 26
         self._setup_gpio()
-        self._buttons_cfg = configuration.ButtonsCfg()
         self._device = device
         self._mode = mode
 
@@ -25,4 +22,3 @@ class Buttons:
 
     def _right_callback(self, channel):
         self._mode.switch()
-        self._device.clear()

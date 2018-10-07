@@ -26,6 +26,7 @@ class Display:
             while not self._change_mode.is_set():
                 self._enabled_modes[self._mode.current]()
             self._change_mode.clear()
+            self._device.clear()
 
     def _clock(self):
         time = datetime.now().time()
