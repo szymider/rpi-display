@@ -21,8 +21,12 @@ modes:
     refresh: 2
     update: 300
     types:
-      eur: pln
-      usd: pln
+      - from: eur
+        to: pln
+      - from: usd
+        to: pln
+      - from: eur
+        to: usd
   ig:
     enable: true
     refresh: 5
