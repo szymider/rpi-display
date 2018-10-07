@@ -88,11 +88,11 @@ class StartupCfg:
 
 class ModesCfg:
     def __init__(self):
-        self.clock: ClockCfg = ClockCfg()
-        self.date: DateCfg = DateCfg()
-        self.weather: WeatherCfg = WeatherCfg()
-        self.exchange_rate: ExchangeRateCfg = ExchangeRateCfg()
-        self.ig: IgCfg = IgCfg()
+        self.clock = ClockCfg()
+        self.date = DateCfg()
+        self.weather = WeatherCfg()
+        self.exchange_rate = ExchangeRateCfg()
+        self.ig = IgCfg()
 
 
 class ClockCfg:
@@ -117,7 +117,7 @@ class DateCfg:
         return self._v.get_float('modes.date.refresh')
 
 
-class WeatherCfg(object):
+class WeatherCfg:
     def __init__(self):
         self._v = v
 
@@ -188,8 +188,8 @@ class ButtonsCfg:
 class BrightnessCfg:
     def __init__(self):
         self._v = v
-        self.standard: StandardCfg = StandardCfg()
-        self.time_dependent: TimeDependentCfg = TimeDependentCfg()
+        self.standard = StandardCfg()
+        self.time_dependent = TimeDependentCfg()
 
     def get_default_mode(self):
         return self._v.get_string('brightness.default_mode')

@@ -27,7 +27,8 @@ class OpenWeatherMap:
 
         json = response.json()
         return {
-            'temp': json['main']['temp'],
+            'unit': self._weather_cfg.get_unit().upper(),
+            'temp': int(json['main']['temp']),
             'pressure': json['main']['pressure'],
             'humidity': json['main']['humidity']
         }
@@ -56,6 +57,7 @@ class DarkSky:
         json = response.json()
 
         return {
+            'unit': self._weather_cfg.get_unit().upper(),
             'temp': int(json['currently']['temperature']),
             'pressure': int(json['currently']['pressure']),
             'humidity': json['currently']['humidity'] * 100

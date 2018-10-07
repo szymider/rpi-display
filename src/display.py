@@ -1,48 +1,57 @@
+import logging
 from datetime import datetime
-from threading import Event
+from itertools import cycle
 
-import RPi.GPIO as GPIO
 import ZeroSeg.led as led
 
+import buttons
 import configuration
-import data
 import ip
 
 
 class Display:
-    def __init__(self, data: data.Data, change_mode: Event):
-        self.button_left = 17
-        self.button_right = 26
-        self._setup_gpio()
+    def __init__(self, d, change_mode):
         self._device = led.Sevensegment(cascaded=2)
-        self._mode = configuration.ModeCfg()
-        self._clock = configuration.ClockCfg()
-        self._data = data
+        self._modes_cfg = configuration.ModesCfg()
+        self._clock_cfg = configuration.ClockCfg()
+        self._enabled_modes = self._get_enabled_modes()
+        self._data = d
         self._change_mode = change_mode
+        self._mode = Mode(len(self._enabled_modes), self._change_mode)
+        self.buttons = buttons.Buttons(self._device, self._mode)
 
-    def clock(self):
+    def start(self):
+        self.buttons.setup_listener()
+        self._device.brightness(1)
+
+        while True:
+            while not self._change_mode.is_set():
+                self._enabled_modes[self._mode.current]()
+            self._change_mode.clear()
+
+    def _clock(self):
         time = datetime.now().time()
         self._device.write_text(1, " {:%H%M%S}".format(time), dots=(3, 5))
-        self._change_mode.wait(self._clock.get_refresh())
+        self._change_mode.wait(self._clock_cfg.get_refresh())
 
-    def date(self):
+    def _date(self):
         date = datetime.now().date()
         self._device.write_text(1, "{:%d-%m-%y}".format(date))
-        self._change_mode.wait(self._mode.date.get_refresh())
+        self._change_mode.wait(self._modes_cfg.date.get_refresh())
 
-    def weather(self):
-        self._device.write_text(1, "{:>6d}*C".format(self._data.weather))
-        self._change_mode.wait(self._mode.weather.get_refresh())
+    def _weather(self):
+        self._device.write_text(1, "{:>6d}*{}".format(self._data.weather['temp'], self._data.weather['unit']))
+        self._change_mode.wait(self._modes_cfg.weather.get_refresh())
 
-    def exchange_rate(self):
-        for k, v in self._data.exchange_rate:
+    def _exchange_rate(self):
+        for k, v in self._data.exchange_rate.items():
             if not self._change_mode.is_set():
-                self._device.show_message(" {:d} {}".format(v, k), delay=0.2)
-                self._change_mode.wait(self._mode.exchange_rate.get_refresh())
+                self._device.show_message("{} {}".format(v, k), delay=0.2)
+                self._change_mode.wait(self._modes_cfg.exchange_rate.get_refresh())
 
-    def instagram(self):
-        self._device.write_text(1, "IG{:>6d}".format(self._data.ig))
-        self._change_mode.wait(self._mode.ig.get_refresh())
+    def _instagram(self):
+        self._device.write_text(1, "IG{:>6d}".format(self._data.ig['followers']))
+        self._change_mode.wait(self._modes_cfg.ig.get_refresh())
 
     def config_changed(self):
         self._device.show_message("CONFIG CHANGED", delay=0.1)
@@ -50,9 +59,28 @@ class Display:
     def ip(self):
         self._device.show_message(text=ip.get_ip())
 
-    def _setup_gpio(self):
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.button_left, GPIO.IN)
-        GPIO.setup(self.button_right, GPIO.IN)
-        GPIO.add_event_detect(self.button_left, GPIO.RISING, bouncetime=250)
-        GPIO.add_event_detect(self.button_right, GPIO.RISING, bouncetime=250)
+    def _get_enabled_modes(self):
+        modes = []
+        if self._modes_cfg.clock.get_enable():
+            modes.append(self._clock)
+        if self._modes_cfg.date.get_enable():
+            modes.append(self._date)
+        if self._modes_cfg.weather.get_enable():
+            modes.append(self._weather)
+        if self._modes_cfg.exchange_rate.get_enable():
+            modes.append(self._exchange_rate)
+        if self._modes_cfg.ig.get_enable():
+            modes.append(self._instagram)
+        return modes
+
+
+class Mode:
+    def __init__(self, enabled_modes_amount, change_mode):
+        self.cycle = cycle(range(enabled_modes_amount))
+        self.current = next(self.cycle)
+
+        self._change_mode = change_mode
+
+    def switch(self):
+        self.current = next(self.cycle)
+        self._change_mode.set()
