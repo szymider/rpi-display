@@ -53,19 +53,21 @@ class Data:
 
     def update_exchange_rate(self):
         data = {}
-        for k, v in self._modes_cfg.exchange_rate.get_types().items():
+        for v in self._modes_cfg.exchange_rate.get_types():
+            f = v['from']
+            t = v['to']
             response = requests.get('http://free.currencyconverterapi.com/api/v5/convert?q={}_{}&compact=y'.format(
-                k.lower(), v.lower()))
+                f.lower(), t.lower()))
 
             status_code = response.status_code
             if status_code / 100 != 2:
                 logging.error('Cannot download exchange rate type={}/{}, status code={} response body={}',
-                              k.upper(), v.upper(), status_code, response.json())
+                              f, t, status_code, response.json())
                 return
 
             json = response.json()
 
-            data['{}/{}'.format(k.upper(), v.upper())] = round(json['{}_{}'.format(k.upper(), v.upper())]['val'], 2)
+            data['{}/{}'.format(f.upper(), t.upper())] = round(json['{}_{}'.format(f.upper(), t.upper())]['val'], 2)
         self.exchange_rate = data
 
     def update_ig(self):
