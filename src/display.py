@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 from itertools import cycle
 
@@ -21,7 +20,6 @@ class Display:
         self.buttons = buttons.Buttons(self._device, self._mode)
 
     def start(self):
-        self.buttons.setup_listener()
         self._device.brightness(1)
 
         while True:

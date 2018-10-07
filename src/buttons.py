@@ -1,6 +1,3 @@
-import threading
-import time
-
 import RPi.GPIO as GPIO
 
 import configuration
@@ -19,20 +16,13 @@ class Buttons:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self._left, GPIO.IN)
         GPIO.setup(self._right, GPIO.IN)
-        GPIO.add_event_detect(self._left, GPIO.RISING, bouncetime=250)
-        GPIO.add_event_detect(self._right, GPIO.RISING, bouncetime=250)
+        GPIO.add_event_detect(self._left, GPIO.RISING, callback=self._left_callback, bouncetime=250)
+        GPIO.add_event_detect(self._right, GPIO.RISING, callback=self._right_callback, bouncetime=250)
 
-    def setup_listener(self):
-        threading.Thread(target=self._listener, daemon=True).start()
+    def _left_callback(self, channel):
+        print("LEFT")
+        pass
 
-    def _listener(self):
-        while True:
-            if GPIO.event_detected(self._left):
-
-                time.sleep(self._buttons_cfg.get_wait_time_after_click())
-            elif GPIO.event_detected(self._right):
-                self._mode.switch()
-                self._device.clear()
-                time.sleep(self._buttons_cfg.get_wait_time_after_click())
-            else:
-                time.sleep(0.2)
+    def _right_callback(self, channel):
+        self._mode.switch()
+        self._device.clear()
