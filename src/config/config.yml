@@ -33,9 +33,6 @@ modes:
     update: 360
     api_key: ''
 
-buttons:
-  wait_time_after_click: 0.4
-
 brightness:
   default_mode: 'standard'
   standard:

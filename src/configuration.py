@@ -38,8 +38,6 @@ def _setup_defaults():
     v.set_default('modes.ig.refresh', 5)
     v.set_default('modes.ig.update', 360)
 
-    v.set_default('buttons.wait_time_after_click', 0.4)
-
     v.set_default('brightness.default_mode', 'standard')
     v.set_default('brightness.standard.default', 1)
     v.set_default('brightness.standard.increase_on_click', 2)
@@ -175,14 +173,6 @@ class IgCfg:
 
     def get_api_key(self):
         return self._v.get_string('modes.ig.api_key')
-
-
-class ButtonsCfg:
-    def __init__(self):
-        self._v = v
-
-    def get_wait_time_after_click(self):
-        return self._v.get_float('buttons.wait_time_after_click')
 
 
 class BrightnessCfg:
