@@ -41,6 +41,7 @@ def _setup_defaults():
     v.set_default('brightness.default_mode', 'standard')
     v.set_default('brightness.standard.default', 1)
     v.set_default('brightness.standard.increase_on_click', 2)
+    v.set_default('brightness.standard.max', 2)
 
 
 def _setup_arguments():
@@ -189,11 +190,14 @@ class StandardCfg:
     def __init__(self):
         self._v = v
 
-    def get_default_value(self):
-        return self._v.get_int('brightness.standard.default_value')
+    def get_default(self):
+        return self._v.get_int('brightness.standard.default')
 
     def get_increase_on_click(self):
         return self._v.get_int('brightness.standard.increase_on_click')
+
+    def get_max(self):
+        return self._v.get_int('brightness.standard.max')
 
 
 class TimeDependentCfg:

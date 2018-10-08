@@ -36,8 +36,9 @@ modes:
 brightness:
   default_mode: 'standard'
   standard:
-    default_value: 1
+    default: 1
     increase_on_click: 2
+    max: 5
   time_dependent:
     hours:
       7: 1
