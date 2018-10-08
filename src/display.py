@@ -21,6 +21,8 @@ class Display:
 
     def start(self):
         self._device.brightness(1)
+        if configuration.StartupCfg().get_show_ip():
+            self._ip()
 
         while True:
             while not self._change_mode.is_set():
@@ -54,7 +56,7 @@ class Display:
     def config_changed(self):
         self._device.show_message("CONFIG CHANGED", delay=0.1)
 
-    def ip(self):
+    def _ip(self):
         self._device.show_message(text=ip.get_ip())
 
     def _get_enabled_modes(self):
