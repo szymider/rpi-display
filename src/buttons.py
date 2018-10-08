@@ -2,12 +2,11 @@ import RPi.GPIO as GPIO
 
 
 class Buttons:
-    def __init__(self, device, mode):
+    def __init__(self, mode):
         self._left = 17
         self._right = 26
-        self._setup_gpio()
-        self._device = device
         self._mode = mode
+        self._setup_gpio()
 
     def _setup_gpio(self):
         GPIO.setmode(GPIO.BCM)
