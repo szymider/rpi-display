@@ -17,7 +17,7 @@ class Display:
         self._data = d
         self._change_mode = change_mode
         self._mode = Mode(len(self._enabled_modes), self._change_mode)
-        self.buttons = buttons.Buttons(self._device, self._mode)
+        self.buttons = buttons.Buttons(self._mode)
 
     def start(self):
         self._device.brightness(1)
