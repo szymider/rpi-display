@@ -46,7 +46,6 @@ class Display:
         for k, v in self._data.exchange_rate.items():
             if not self._change_mode.is_set():
                 self._device.show_message("{} {}".format(v, k), delay=0.2)
-                self._change_mode.wait(self._modes_cfg.exchange_rate.get_refresh())
 
     def _instagram(self):
         self._device.write_text(1, "IG{:>6d}".format(self._data.ig['followers']))

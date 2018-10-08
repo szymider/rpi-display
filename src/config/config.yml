@@ -18,7 +18,6 @@ modes:
     api_key: ''
   exchange_rate:
     enable: true
-    refresh: 2
     update: 300
     types:
       - from: eur

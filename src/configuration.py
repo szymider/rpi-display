@@ -31,7 +31,6 @@ def _setup_defaults():
     v.set_default('modes.weather.update', 300)
 
     v.set_default('modes.exchange_rate.enable', False)
-    v.set_default('modes.exchange_rate.refresh', 5)
     v.set_default('modes.exchange_rate.update', 300)
 
     v.set_default('modes.ig.enable', False)
@@ -148,9 +147,6 @@ class ExchangeRateCfg:
 
     def get_enable(self):
         return self._v.get_bool('modes.exchange_rate.enable')
-
-    def get_refresh(self):
-        return self._v.get_float('modes.exchange_rate.refresh')
 
     def get_update(self):
         return self._v.get_float('modes.exchange_rate.update')
