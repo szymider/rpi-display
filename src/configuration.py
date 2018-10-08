@@ -41,7 +41,7 @@ def _setup_defaults():
     v.set_default('brightness.default_mode', 'standard')
     v.set_default('brightness.standard.default', 1)
     v.set_default('brightness.standard.increase_on_click', 2)
-    v.set_default('brightness.standard.max', 2)
+    v.set_default('brightness.standard.max', 16)
 
 
 def _setup_arguments():
