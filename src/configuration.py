@@ -14,7 +14,6 @@ def setup_config():
     _setup_defaults()
     _setup_arguments()
     _setup_file()
-    _validate_config()
 
 
 def _setup_defaults():
@@ -61,19 +60,18 @@ def _setup_file():
     v.set_config_name(v.get_string('cf'))
     v.set_config_type('yaml')
     v.add_config_path(v.get_string('cp'))
-    v.read_in_config()
-
-    v.on_config_change(_config_changed)
+    print(v.read_in_config())
+    _validate_config()
     v.watch_config()
+
+
+def setup_config_change_reaction(callback):
+    v.on_config_change(callback)
 
 
 def _validate_config():
     # TODO
     pass
-
-
-def _config_changed():
-    logging.info("Detected config file change. Config reloaded.")
 
 
 class StartupCfg:

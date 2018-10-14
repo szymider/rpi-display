@@ -15,6 +15,9 @@ class Buttons:
         GPIO.add_event_detect(self._left, GPIO.RISING, callback=self._left_callback, bouncetime=250)
         GPIO.add_event_detect(self._right, GPIO.RISING, callback=self._right_callback, bouncetime=250)
 
+    def cleanup_gpio(self):
+        GPIO.cleanup()
+
     def _left_callback(self, channel):
         print("LEFT")
         pass
