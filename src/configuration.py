@@ -15,6 +15,8 @@ def setup_config():
     _setup_arguments()
     _setup_file()
 
+    _validate_config()
+
 
 def _setup_defaults():
     v.set_default('startup.show_ip', True)
@@ -46,7 +48,7 @@ def _setup_arguments():
     _setup_default_arguments()
 
     fp = FlagsProvider()
-    fp.add_argument('-cp', type=str, help='Configs location path')
+    fp.add_argument('-cp', type=str, help='Config location path')
     fp.add_argument('-cf', type=str, help='Config file name (without .yml extension)')
     v.bind_flags(fp, sys.argv)
 
@@ -60,13 +62,7 @@ def _setup_file():
     v.set_config_name(v.get_string('cf'))
     v.set_config_type('yaml')
     v.add_config_path(v.get_string('cp'))
-    print(v.read_in_config())
-    _validate_config()
-    v.watch_config()
-
-
-def setup_config_change_reaction(callback):
-    v.on_config_change(callback)
+    v.read_in_config()
 
 
 def _validate_config():

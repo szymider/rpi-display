@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 from itertools import cycle
 from threading import Event
@@ -17,24 +16,20 @@ class Display:
         self._clock_cfg = configuration.ClockCfg()
         self._enabled_modes = self._get_enabled_modes()
         self._data = d
-        self._enable = Event()
         self._change_mode = Event()
-        self._mode = Mode(len(self._enabled_modes) - 1, self._change_mode)
+        self._mode = Mode(len(self._enabled_modes), self._change_mode)
         self._buttons = buttons.Buttons(self._mode)
-        configuration.setup_config_change_reaction(self._config_changed)
 
     def start(self):
         self._device.brightness(1)
         if configuration.StartupCfg().get_show_ip():
             self._ip()
 
-        while not self._enable.is_set():
+        while True:
             while not self._change_mode.is_set():
                 self._enabled_modes[self._mode.current]()
             self._change_mode.clear()
             self._device.clear()
-
-        self._buttons.cleanup_gpio()
 
     def _clock(self):
         time = datetime.now().time()
@@ -59,13 +54,6 @@ class Display:
         self._device.write_text(1, "IG{:>6d}".format(self._data.ig['followers']))
         self._change_mode.wait(self._modes_cfg.ig.get_refresh())
 
-    def _config_changed(self):
-        self._mode.config_changed()
-        logging.info("Restarting display due to config change")
-        self._device.show_message("CONFIG CHANGED", delay=0.13, full_scroll=True)
-        self._change_mode.set()
-        self._enable.set()
-
     def _ip(self):
         self._device.show_message(text=ip.get_ip())
 
@@ -81,24 +69,16 @@ class Display:
             modes.append(self._exchange_rate)
         if self._modes_cfg.ig.get_enable():
             modes.append(self._instagram)
-
-        # Special modes (not included)
-        modes.append(self._config_changed)
         return modes
 
 
 class Mode:
     def __init__(self, enabled_modes_amount, change_mode):
-        self._enabled_modes_amount = enabled_modes_amount
-        self.cycle = cycle(range(self._enabled_modes_amount))
-        self.current = next(self.cycle)
+        self._cycle = cycle(range(enabled_modes_amount))
+        self.current = next(self._cycle)
 
         self._change_mode = change_mode
 
     def switch(self):
-        self.current = next(self.cycle)
-        self._change_mode.set()
-
-    def config_changed(self):
-        self.current = self._enabled_modes_amount
+        self.current = next(self._cycle)
         self._change_mode.set()
