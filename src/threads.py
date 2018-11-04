@@ -1,8 +1,6 @@
 from threading import Thread
 from datetime import datetime
 import events
-from display import device
-from constants import HOURS
 
 
 def start_flow():
