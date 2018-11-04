@@ -4,14 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-ZeroSeg = {git = "https://github.com/aklimko/ZeroSeg.git", ref = "master", editable = true}
-"rpi.gpio" = "*"
-spidev = "*"
+ZeroSeg = {editable = true, git = "https://github.com/aklimko/ZeroSeg.git", ref = "master"}
 requests = "*"
 vyper-config = "*"
+spidev = "*"
 schedule = "*"
-
-[dev-packages]
+"rpi.gpio" = "*"
+jsonschema = "==v3.0.0a3"
 
 [requires]
 python_version = "3.5"
+
+[dev-packages]

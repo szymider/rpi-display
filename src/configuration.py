@@ -2,6 +2,7 @@ import logging
 import sys
 
 from vyper import v, FlagsProvider
+from jsonschema import validate, ValidationError
 
 
 def setup_logging():
@@ -66,16 +67,195 @@ def _setup_file():
 
 
 def _validate_config():
-    # TODO
-    pass
+    schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Config schema",
+        "definitions": {
+            "brightness_level": {"type": "number", "multipleOf": 1.0, "minimum": 1, "maximum": 16},
+            "not_empty_string": {"type": "string", "minLength": 1}
+        },
+        "type": "object",
+        "properties": {
+            "startup": {
+                "type": "object",
+                "properties": {
+                    "show_ip": {"type": "boolean"}
+                }
+            },
+            "modes": {
+                "type": "object",
+                "properties": {
+                    "clock": {
+                        "type": "object",
+                        "properties": {
+                            "enable": {"type": "boolean"}
+                        },
+                        "if": {
+                            "properties": {
+                                "enable": {"enum": [True]}
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "refresh": {"type": "number"}
+                            },
+                            "required": ["refresh"]
+                        }
+                    },
+                    "date": {
+                        "type": "object",
+                        "properties": {
+                            "enable": {"type": "boolean"}
+                        },
+                        "if": {
+                            "properties": {
+                                "enable": {"enum": [True]}
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "refresh": {"type": "number"}
+                            }
+                        }
+                    },
+                    "weather": {
+                        "type": "object",
+                        "properties": {
+                            "enable": {"type": "boolean"}
+                        },
+                        "if": {
+                            "properties": {
+                                "enable": {"enum": [True]}
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "refresh": {"type": "number"},
+                                "update": {"type": "number"},
+                                "provider": {"type": "string", "enum": ['OWM', 'owm', 'DS', 'ds']},
+                                "unit": {"type": "string", "enum": ['C', 'c', 'F', 'f']},
+                                "location": {"$ref": "#/definitions/not_empty_string"},
+                                "api_key": {"$ref": "#/definitions/not_empty_string"}
+                            },
+                            "required": ["refresh", "update", "provider", "unit", "location", "api_key"]
+                        }
+                    },
+                    "exchange_rate": {
+                        "type": "object",
+                        "properties": {
+                            "enable": {"type": "boolean"}
+                        },
+                        "if": {
+                            "properties": {
+                                "enable": {"enum": [True]}
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "refresh": {"type": "number"},
+                                "update": {"type": "number"},
+                                "types": {
+                                    "type": "array",
+                                    "minItems": 1,
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "from": {"$ref": "#/definitions/not_empty_string"},
+                                            "to": {"$ref": "#/definitions/not_empty_string"}
+                                        },
+                                        "required": ["from", "to"]
+                                    }
+                                }
+                            },
+                            "required": ["refresh", "update", "types"]
+                        }
+                    },
+                    "ig": {
+                        "type": "object",
+                        "properties": {
+                            "enable": {"type": "boolean"}
+                        },
+                        "if": {
+                            "properties": {
+                                "enable": {"enum": [True]}
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "refresh": {"type": "number"},
+                                "update": {"type": "number"},
+                                "api_key": {"$ref": "#/definitions/not_empty_string"}
+                            },
+                            "required": ["refresh", "update", "api_key"]
+                        }
+                    }
+                }
+            },
+            "brightness": {
+                "type": "object",
+                "properties": {
+                    "default_mode": {"type": "string", "enum": ["standard", "time_dependent"]}
+                },
+                "if": {
+                    "properties": {
+                        "default_mode": {"enum": ['standard']}
+                    }
+                },
+                "then": {
+                    "properties": {
+                        "standard": {
+                            "type": "object",
+                            "properties": {
+                                "default": {"$ref": "#/definitions/brightness_level"},
+                                "increase_on_click": {"type": "number", "multipleOf": 1.0, "minimum": 1,
+                                                      "maximum": 15},
+                                "max": {"$ref": "#/definitions/brightness_level"}
+                            },
+                            "required": ["default", "increase_on_click", "max"]
+                        },
+                    },
+                    "required": ["standard"]
+                },
+                "else": {
+                    "properties": {
+                        "time_dependent": {
+                            "type": "object",
+                            "properties": {
+                                "hours": {
+                                    "type": "array",
+                                    "minItems": 2,
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "from": {"type": "string", "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"},
+                                            "value": {"$ref": "#/definitions/brightness_level"}
+                                        },
+                                        "required": ["from", "value"]
+                                    }
+                                }
+                            },
+                            "required": ["hours"]
+                        }
+                    },
+                    "required": ["time_dependent"]
+                }
+            }
+        }
+    }
+
+    try:
+        validate(v.all_settings(), schema)
+    except ValidationError as e:
+        logging.error(".".join(x for x in e.path if isinstance(x, str)) + ": " + e.message)
+        sys.exit(0)
 
 
 class StartupCfg:
     def __init__(self):
-        self.v = v
+        self._v = v
 
     def get_show_ip(self):
-        return self.v.get_bool('startup.show_ip')
+        return self._v.get_bool('startup.show_ip')
 
 
 class ModesCfg:
