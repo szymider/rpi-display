@@ -1,6 +1,6 @@
-import configuration
-import data
-import display
+from rpidisplay import configuration
+from rpidisplay import data
+from rpidisplay import display
 
 
 def main():

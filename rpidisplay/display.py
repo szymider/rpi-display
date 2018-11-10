@@ -4,9 +4,9 @@ from threading import Event
 
 import ZeroSeg.led as led
 
-import buttons
-import configuration
-import ip
+from rpidisplay import buttons
+from rpidisplay import configuration
+from rpidisplay import ip
 
 
 class Display:
