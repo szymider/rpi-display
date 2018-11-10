@@ -1,6 +1,6 @@
-import configuration
-import data
-import display
+from rpidisplay import configuration
+from rpidisplay import data
+from rpidisplay import display
 
 
 def main():
@@ -13,6 +13,6 @@ def main():
     dp = display.Display(d)
     dp.start()
 
+
 if __name__ == '__main__':
-    while True:
-        main()
+    main()

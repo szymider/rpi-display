@@ -6,8 +6,8 @@ from collections import OrderedDict
 import requests
 import schedule
 
-import configuration
-from weather_providers import OpenWeatherMap, DarkSky
+from rpidisplay import configuration
+from rpidisplay.weather_providers import OpenWeatherMap, DarkSky
 
 
 class Data:
