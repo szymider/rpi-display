@@ -13,6 +13,7 @@ def main():
     dp = display.Display(d)
     dp.start()
 
+
 if __name__ == '__main__':
     while True:
         main()
