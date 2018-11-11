@@ -67,7 +67,7 @@ class Data:
 
             json = response.json()
 
-            data['{}/{}'.format(f.upper(), t.upper())] = round(json['{}_{}'.format(f.upper(), t.upper())]['val'], 2)
+            data['{} {}'.format(f.upper(), t.upper())] = round(json['{}_{}'.format(f.upper(), t.upper())]['val'], 2)
         self.exchange_rate = data
 
     def update_ig(self):
