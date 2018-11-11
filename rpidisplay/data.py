@@ -52,7 +52,7 @@ class Data:
         self.weather = self._weather_provider.download_data()
 
     def update_exchange_rate(self):
-        data = {}
+        data = OrderedDict()
         for v in self._modes_cfg.exchange_rate.get_types():
             f = v['from']
             t = v['to']
