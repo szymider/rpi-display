@@ -49,20 +49,20 @@ def _setup_arguments():
     _setup_default_arguments()
 
     fp = FlagsProvider()
-    fp.add_argument('-cp', type=str, help='Config location path')
-    fp.add_argument('-cf', type=str, help='Config file name (without .yml extension)')
+    fp.add_argument('-p', type=str, help='Config location path')
+    fp.add_argument('-f', type=str, help='Config file name (without .yml extension)')
     v.bind_flags(fp, sys.argv)
 
 
 def _setup_default_arguments():
-    v.set_default('cp', './config')
-    v.set_default('cf', 'config')
+    v.set_default('p', './config')
+    v.set_default('f', 'config')
 
 
 def _setup_file():
-    v.set_config_name(v.get_string('cf'))
+    v.set_config_name(v.get_string('f'))
     v.set_config_type('yaml')
-    v.add_config_path(v.get_string('cp'))
+    v.add_config_path(v.get_string('p'))
     v.read_in_config()
 
 
