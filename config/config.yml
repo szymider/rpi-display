@@ -26,7 +26,7 @@ modes:
         to: pln
       - from: eur
         to: usd
-  ig:
+  instagram:
     enable: true
     refresh: 5
     update: 360

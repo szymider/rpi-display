@@ -52,7 +52,7 @@ class Display:
 
     def _instagram(self):
         self._device.write_text(1, "IG{:>6d}".format(self._data.ig['followers']))
-        self._change_mode.wait(self._modes_cfg.ig.get_refresh())
+        self._change_mode.wait(self._modes_cfg.instagram.get_refresh())
 
     def _ip(self):
         self._device.show_message(text=ip.get_ip())
@@ -67,7 +67,7 @@ class Display:
             modes.append(self._weather)
         if self._modes_cfg.exchange_rate.get_enable():
             modes.append(self._exchange_rate)
-        if self._modes_cfg.ig.get_enable():
+        if self._modes_cfg.instagram.get_enable():
             modes.append(self._instagram)
         return modes
 

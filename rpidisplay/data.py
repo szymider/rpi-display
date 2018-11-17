@@ -14,7 +14,7 @@ class Data:
     def __init__(self):
         self.weather = None
         self.exchange_rate = None
-        self.ig = None
+        self.instagram = None
         self._modes_cfg = configuration.ModesCfg()
         self._weather_provider = self._get_provider()
 
@@ -45,8 +45,8 @@ class Data:
         updateable_modes = OrderedDict()
         updateable_modes[self._modes_cfg.weather] = self._modes_cfg.weather.get_enable()
         updateable_modes[self._modes_cfg.exchange_rate] = self._modes_cfg.exchange_rate.get_enable()
-        updateable_modes[self._modes_cfg.ig] = self._modes_cfg.ig.get_enable()
-        return updateable_modes, [self.update_weather, self.update_exchange_rate, self.update_ig]
+        updateable_modes[self._modes_cfg.instagram] = self._modes_cfg.instagram.get_enable()
+        return updateable_modes, [self.update_weather, self.update_exchange_rate, self.update_instagram]
 
     def update_weather(self):
         self.weather = self._weather_provider.download_data()
@@ -70,9 +70,9 @@ class Data:
             data['{} {}'.format(f.upper(), t.upper())] = round(json['{}_{}'.format(f.upper(), t.upper())]['val'], 2)
         self.exchange_rate = data
 
-    def update_ig(self):
+    def update_instagram(self):
         response = requests.get(
-            "https://api.instagram.com/v1/users/self/?access_token={}".format(self._modes_cfg.ig.get_api_key()))
+            "https://api.instagram.com/v1/users/self/?access_token={}".format(self._modes_cfg.instagram.get_api_key()))
 
         status_code = response.status_code
         if status_code / 100 != 2:
@@ -81,6 +81,6 @@ class Data:
             return
 
         json = response.json()
-        self.ig = {
+        self.instagram = {
             'followers': json['data']['counts']['followed_by'],
         }

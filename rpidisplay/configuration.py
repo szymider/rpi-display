@@ -35,9 +35,9 @@ def _setup_defaults():
     v.set_default('modes.exchange_rate.enable', False)
     v.set_default('modes.exchange_rate.update', 300)
 
-    v.set_default('modes.ig.enable', False)
-    v.set_default('modes.ig.refresh', 5)
-    v.set_default('modes.ig.update', 360)
+    v.set_default('modes.instagram.enable', False)
+    v.set_default('modes.instagram.refresh', 5)
+    v.set_default('modes.instagram.update', 360)
 
     v.set_default('brightness.default_mode', 'standard')
     v.set_default('brightness.standard.default', 1)
@@ -170,7 +170,7 @@ def _validate_config():
                             "required": ["refresh", "update", "types"]
                         }
                     },
-                    "ig": {
+                    "instagram": {
                         "type": "object",
                         "properties": {
                             "enable": {"type": "boolean"}
@@ -264,7 +264,7 @@ class ModesCfg:
         self.date = DateCfg()
         self.weather = WeatherCfg()
         self.exchange_rate = ExchangeRateCfg()
-        self.ig = IgCfg()
+        self.instagram = InstagramCfg()
 
 
 class ClockCfg:
@@ -329,21 +329,21 @@ class ExchangeRateCfg:
         return self._v.get('modes.exchange_rate.types')
 
 
-class IgCfg:
+class InstagramCfg:
     def __init__(self):
         self._v = v
 
     def get_enable(self):
-        return self._v.get_bool('modes.ig.enable')
+        return self._v.get_bool('modes.instagram.enable')
 
     def get_refresh(self):
-        return self._v.get_float('modes.ig.refresh')
+        return self._v.get_float('modes.instagram.refresh')
 
     def get_update(self):
-        return self._v.get_float('modes.ig.update')
+        return self._v.get_float('modes.instagram.update')
 
     def get_api_key(self):
-        return self._v.get_string('modes.ig.api_key')
+        return self._v.get_string('modes.instagram.api_key')
 
 
 class BrightnessCfg:
