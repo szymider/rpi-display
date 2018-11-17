@@ -13,7 +13,7 @@ class OpenWeatherMap:
     def download_data(self):
         units = {
             'C': 'metric',
-            'F': 'imperial'
+            'F': 'imperial',
         }
         unit = units[self._weather_cfg.get_unit().upper()]
 
@@ -30,7 +30,7 @@ class OpenWeatherMap:
             'unit': self._weather_cfg.get_unit().upper(),
             'temp': int(json['main']['temp']),
             'pressure': json['main']['pressure'],
-            'humidity': json['main']['humidity']
+            'humidity': json['main']['humidity'],
         }
 
 
@@ -42,7 +42,7 @@ class DarkSky:
     def download_data(self):
         units = {
             'C': 'si',
-            'F': 'us'
+            'F': 'us',
         }
         unit = units[self._weather_cfg.get_unit().upper()]
 
@@ -60,5 +60,5 @@ class DarkSky:
             'unit': self._weather_cfg.get_unit().upper(),
             'temp': int(json['currently']['temperature']),
             'pressure': int(json['currently']['pressure']),
-            'humidity': json['currently']['humidity'] * 100
+            'humidity': json['currently']['humidity'] * 100,
         }

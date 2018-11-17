@@ -35,7 +35,7 @@ class Data:
     def _get_provider(self):
         providers = {
             'OWM': OpenWeatherMap,
-            'DS': DarkSky
+            'DS': DarkSky,
         }
         config_provider = self._modes_cfg.weather.get_provider().upper()
         provider = providers[config_provider]
@@ -82,5 +82,5 @@ class Data:
 
         json = response.json()
         self.ig = {
-            'followers': json['data']['counts']['followed_by']
+            'followers': json['data']['counts']['followed_by'],
         }
