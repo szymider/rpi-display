@@ -51,7 +51,7 @@ class Display:
                 self._device.show_message("{} {}".format(v, k), delay=0.2)
 
     def _instagram(self):
-        self._device.write_text(1, "IG{:>6d}".format(self._data.ig['followers']))
+        self._device.write_text(1, "IG{:>6d}".format(self._data.instagram['followers']))
         self._change_mode.wait(self._modes_cfg.instagram.get_refresh())
 
     def _ip(self):
