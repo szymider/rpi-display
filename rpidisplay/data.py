@@ -67,13 +67,13 @@ class Data:
 
             status_code = response.status_code
             if status_code / 100 != 2:
-                logging.error('Cannot download exchange rate type={}/{}, status code={} response body={}',
+                logging.error('Cannot download exchange rate type=%s/%s, status code=%d response body=%s',
                               f, t, status_code, response.json())
                 continue
 
             json = response.json()
             if not json:
-                logging.error('Failed to download exchange rate type={}/{}', f, t)
+                logging.error('Failed to download exchange rate type=%s/%s', f, t)
                 continue
 
             data['{} {}'.format(f.upper(), t.upper())] = round(json['{}_{}'.format(f.upper(), t.upper())]['val'], 2)
@@ -85,7 +85,7 @@ class Data:
 
         status_code = response.status_code
         if status_code / 100 != 2:
-            logging.error('Cannot download instagram followers, status code={}, response body={}',
+            logging.error('Cannot download instagram followers, status code=%d, response body=%s',
                           status_code, response.json())
             return
 

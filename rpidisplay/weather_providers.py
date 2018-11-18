@@ -22,7 +22,7 @@ class OpenWeatherMap:
 
         status_code = response.status_code
         if status_code / 100 != 2:
-            logging.error('Cannot download weather provider=OpenWeatherMap, status code={}', status_code)
+            logging.error('Cannot download weather using provider=OpenWeatherMap, status code=%d', status_code)
             return
 
         json = response.json()
@@ -51,7 +51,7 @@ class DarkSky:
 
         status_code = response.status_code
         if status_code / 100 != 2:
-            logging.error('Cannot download weather provider=DarkSky, status code={}', status_code)
+            logging.error('Cannot download weather using provider=DarkSky, status code=%d', status_code)
             return
 
         json = response.json()
