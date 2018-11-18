@@ -63,7 +63,13 @@ def _setup_file():
     v.set_config_name(v.get_string('f'))
     v.set_config_type('yaml')
     v.add_config_path(v.get_string('p'))
-    v.read_in_config()
+
+    try:
+        v.read_in_config()
+    except FileNotFoundError:
+        logging.info("Config file was not found")
+    except OSError as e:
+        logging.warn(e)
 
 
 def _validate_config():
