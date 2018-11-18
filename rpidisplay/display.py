@@ -24,12 +24,14 @@ class Display:
         self._device.brightness(1)
         if configuration.StartupCfg().get_show_ip():
             self._ip()
-
-        while True:
-            while not self._change_mode.is_set():
-                self._enabled_modes[self._mode.current]()
-            self._change_mode.clear()
-            self._device.clear()
+        try:
+            while True:
+                while not self._change_mode.is_set():
+                    self._enabled_modes[self._mode.current]()
+                self._change_mode.clear()
+                self._device.clear()
+        except KeyboardInterrupt:
+            self._cleanup()
 
     def _clock(self):
         time = datetime.now().time()
@@ -70,6 +72,9 @@ class Display:
         if self._modes_cfg.instagram.get_enable():
             modes.append(self._instagram)
         return modes
+
+    def _cleanup(self):
+        self._buttons.cleanup_gpio()
 
 
 class Mode:

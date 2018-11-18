@@ -1,3 +1,5 @@
+import logging
+
 import RPi.GPIO as GPIO
 
 
@@ -17,6 +19,7 @@ class Buttons:
 
     def cleanup_gpio(self):
         GPIO.cleanup()
+        logging.info("Cleaned up GPIO")
 
     def _left_callback(self, channel):
         print("LEFT")
