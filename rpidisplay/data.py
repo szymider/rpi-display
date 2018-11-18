@@ -69,7 +69,7 @@ class Data:
             if status_code / 100 != 2:
                 logging.error('Cannot download exchange rate type={}/{}, status code={} response body={}',
                               f, t, status_code, response.json())
-                return
+                continue
 
             json = response.json()
 
