@@ -63,7 +63,7 @@ class Data:
             f = v['from']
             t = v['to']
             response = requests.get('http://free.currencyconverterapi.com/api/v5/convert?q={}_{}&compact=y'.format(
-                f.lower(), t.lower()))
+                f, t))
 
             status_code = response.status_code
             if status_code / 100 != 2:
@@ -72,6 +72,9 @@ class Data:
                 continue
 
             json = response.json()
+            if not json:
+                logging.error('Failed to download exchange rate type={}/{}', f, t)
+                continue
 
             data['{} {}'.format(f.upper(), t.upper())] = round(json['{}_{}'.format(f.upper(), t.upper())]['val'], 2)
         self.exchange_rate = data
