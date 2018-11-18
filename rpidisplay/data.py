@@ -24,8 +24,11 @@ class Data:
             if enabled:
                 schedule.every(mode.get_update()).seconds.do(download_modes.pop(0))
 
-        schedule.run_all()
-        threading.Thread(target=self._run_continuously, daemon=True).start()
+        if schedule.jobs:
+            schedule.run_all()
+            threading.Thread(target=self._run_continuously, daemon=True).start()
+        else:
+            logging.info("No jobs to schedule")
 
     def _run_continuously(self):
         while True:
@@ -33,6 +36,9 @@ class Data:
             time.sleep(2)
 
     def _get_provider(self):
+        if not self._modes_cfg.weather.get_enable():
+            return None
+
         providers = {
             'OWM': OpenWeatherMap,
             'DS': DarkSky,
