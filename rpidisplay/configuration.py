@@ -20,7 +20,7 @@ def setup_config():
 
 
 def _setup_defaults():
-    v.set_default('startup.show_ip', True)
+    v.set_default('startup.show_ip', False)
 
     v.set_default('modes.clock.enable', True)
     v.set_default('modes.clock.refresh', 0.995)
