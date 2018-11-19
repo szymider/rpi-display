@@ -19,6 +19,7 @@ class Display:
         self._change_mode = Event()
         self._mode = Mode(len(self._enabled_modes), self._change_mode)
         self._buttons = buttons.Buttons(self._mode)
+        self._no_data = "NO DATA"
 
     def start(self):
         self._device.brightness(1)
@@ -44,16 +45,26 @@ class Display:
         self._change_mode.wait(self._modes_cfg.date.get_refresh())
 
     def _weather(self):
-        self._device.write_text(1, "{:>6d}*{}".format(self._data.weather['temp'], self._data.weather['unit']))
+        if self._data.weather:
+            self._device.write_text(1, "{:>6d}*{}".format(self._data.weather['temp'], self._data.weather['unit']))
+        else:
+            self._device.write_text(1, self._no_data)
         self._change_mode.wait(self._modes_cfg.weather.get_refresh())
 
     def _exchange_rate(self):
-        for k, v in self._data.exchange_rate.items():
-            if not self._change_mode.is_set():
-                self._device.show_message("{} {}".format(v, k), delay=0.2)
+        if self._data.exchange_rate:
+            for k, v in self._data.exchange_rate.items():
+                if not self._change_mode.is_set():
+                    self._device.show_message("{} {}".format(v, k), delay=0.2)
+        else:
+            self._device.write_text(1, self._no_data)
+            self._change_mode.wait(1)
 
     def _instagram(self):
-        self._device.write_text(1, "IG{:>6d}".format(self._data.instagram['followers']))
+        if self._data.instagram:
+            self._device.write_text(1, "IG{:>6d}".format(self._data.instagram['followers']))
+        else:
+            self._device.write_text(1, self._no_data)
         self._change_mode.wait(self._modes_cfg.instagram.get_refresh())
 
     def _ip(self):
