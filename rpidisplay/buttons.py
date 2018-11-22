@@ -4,10 +4,11 @@ import RPi.GPIO as GPIO
 
 
 class Buttons:
-    def __init__(self, mode):
+    def __init__(self, mode, brightness):
         self._left = 17
         self._right = 26
         self._mode = mode
+        self._brightness = brightness
         self._setup_gpio()
 
     def _setup_gpio(self):
@@ -22,8 +23,7 @@ class Buttons:
         logging.info("Cleaned up GPIO")
 
     def _left_callback(self, channel):
-        print("LEFT")
-        pass
+        self._brightness.on_click()
 
     def _right_callback(self, channel):
         self._mode.switch()
