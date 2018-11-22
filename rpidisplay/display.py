@@ -33,6 +33,7 @@ class Display:
                 self._change_mode.clear()
                 self._device.clear()
         except KeyboardInterrupt:
+            self._device.clear()
             self._cleanup()
 
     def _clock(self):
