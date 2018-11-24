@@ -1,10 +1,9 @@
 import datetime
 import logging
 import sys
-import threading
 import time
 
-import schedule
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from rpidisplay import configuration
 
@@ -60,26 +59,23 @@ class TimeDependent:
         self._times = self._convert_times()
         self._level = None
         self._watch_times()
-        self._scheduler = schedule.Scheduler()
-        self._watcher = threading.Thread(target=self._run_scheduler, daemon=True).start()
+        self._scheduler = self._setup_scheduler()
+
+    def on_click(self):
+        pass
+
+    def _setup_scheduler(self):
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(self._watch_times, trigger='cron', minute='*/1')
+        scheduler.start()
+        return scheduler
 
     def _convert_times(self):
         time_format = '%H:%M'
-        times = sorted(self._cfg.get_hours(), key=lambda x: time.strptime(x['from'], time_format), reverse=True)
+        times = sorted(self._cfg.get_times(), key=lambda x: time.strptime(x['from'], time_format), reverse=True)
         for t in times:
             t['from'] = time.strptime(t['from'], time_format)
         return times
-
-    def _run_scheduler(self):
-        now_seconds = datetime.datetime.now().second
-        time.sleep(60 - now_seconds)
-
-        self._scheduler.every().minute.do(self._watch_times)
-        self._watch_times()
-
-        while True:
-            self._scheduler.run_pending()
-            time.sleep(1)
 
     def _watch_times(self):
         now = datetime.datetime.now().time()
@@ -91,6 +87,3 @@ class TimeDependent:
                     self._device.brightness(value)
                     self._level = value
                 break
-
-    def on_click(self):
-        pass
