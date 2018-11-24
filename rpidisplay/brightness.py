@@ -16,7 +16,7 @@ class Brightness:
 
     def _get_mode(self):
         mode = None
-        cfg_default_mode = self._cfg.get_default_mode()
+        cfg_default_mode = self._cfg.get_mode()
         if cfg_default_mode == 'standard':
             mode = Standard(self._device)
         elif cfg_default_mode == 'time_dependent':
