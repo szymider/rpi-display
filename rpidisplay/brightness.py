@@ -50,6 +50,7 @@ class Standard:
 
     def _set_brightness(self):
         self._device.brightness(self._level)
+        logging.info('Changed brightness level to %d', self._level)
 
 
 class TimeDependent:
@@ -94,5 +95,6 @@ class TimeDependent:
         self._set_brightness(latest_value)
 
     def _set_brightness(self, value):
-        self._device.brightness(value)
         self._level = value
+        self._device.brightness(self._level)
+        logging.info('Changed brightness level to %d', self._level)
