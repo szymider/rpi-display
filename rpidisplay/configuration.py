@@ -21,8 +21,6 @@ def setup_config():
 
 
 def _setup_defaults():
-    v.set_default('startup.show_ip', False)
-
     v.set_default('modes.clock.enable', True)
     v.set_default('modes.clock.refresh', 0.995)
 
@@ -76,12 +74,6 @@ def _validate_config():
         },
         "type": "object",
         "properties": {
-            "startup": {
-                "type": "object",
-                "properties": {
-                    "show_ip": {"type": "boolean"}
-                }
-            },
             "modes": {
                 "type": "object",
                 "properties": {
@@ -248,14 +240,6 @@ def _validate_config():
     except ValidationError as e:
         logging.error(".".join(x for x in e.path if isinstance(x, str)) + ": " + e.message)
         sys.exit(0)
-
-
-class StartupCfg:
-    def __init__(self):
-        self._v = v
-
-    def get_show_ip(self):
-        return self._v.get_bool('startup.show_ip')
 
 
 class ModesCfg:

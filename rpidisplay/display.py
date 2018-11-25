@@ -7,7 +7,6 @@ import ZeroSeg.led as led
 from rpidisplay import brightness
 from rpidisplay import buttons
 from rpidisplay import configuration
-from rpidisplay import ip
 
 
 class Display:
@@ -24,8 +23,6 @@ class Display:
         self._no_data = "NO DATA"
 
     def start(self):
-        if configuration.StartupCfg().get_show_ip():
-            self._ip()
         try:
             while True:
                 while not self._change_mode.is_set():
@@ -68,9 +65,6 @@ class Display:
         else:
             self._device.write_text(1, self._no_data)
         self._change_mode.wait(self._modes_cfg.instagram.get_refresh())
-
-    def _ip(self):
-        self._device.show_message(text=ip.get_ip())
 
     def _get_enabled_modes(self):
         modes = []
