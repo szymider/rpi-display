@@ -71,7 +71,7 @@ def _validate_config():
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Config schema",
         "definitions": {
-            "brightness_level": {"type": "number", "multipleOf": 1.0, "minimum": 1, "maximum": 16},
+            "brightness_level": {"type": "number", "multipleOf": 1.0, "minimum": 0, "maximum": 15},
             "not_empty_string": {"type": "string", "minLength": 1}
         },
         "type": "object",
