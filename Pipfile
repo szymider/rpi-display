@@ -16,6 +16,7 @@ spidev = "*"
 schedule = "*"
 "rpi.gpio" = "*"
 jsonschema = "==v3.0.0a3"
+apscheduler = "*"
 
 [dev-packages]
 

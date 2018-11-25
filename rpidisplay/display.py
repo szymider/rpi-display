@@ -4,6 +4,7 @@ from threading import Event
 
 import ZeroSeg.led as led
 
+from rpidisplay import brightness
 from rpidisplay import buttons
 from rpidisplay import configuration
 from rpidisplay import ip
@@ -18,11 +19,11 @@ class Display:
         self._data = d
         self._change_mode = Event()
         self._mode = Mode(len(self._enabled_modes), self._change_mode)
-        self._buttons = buttons.Buttons(self._mode)
+        self._brightness = brightness.Brightness(self._device)
+        self._buttons = buttons.Buttons(self._mode, self._brightness)
         self._no_data = "NO DATA"
 
     def start(self):
-        self._device.brightness(1)
         if configuration.StartupCfg().get_show_ip():
             self._ip()
         try:
@@ -32,6 +33,7 @@ class Display:
                 self._change_mode.clear()
                 self._device.clear()
         except KeyboardInterrupt:
+            self._device.clear()
             self._cleanup()
 
     def _clock(self):
@@ -86,6 +88,7 @@ class Display:
 
     def _cleanup(self):
         self._buttons.cleanup_gpio()
+        self._brightness.cleanup()
 
 
 class Mode:

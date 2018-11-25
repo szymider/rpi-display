@@ -1,8 +1,9 @@
+import argparse
 import logging
 import sys
 
-from vyper import v, FlagsProvider
 from jsonschema import validate, ValidationError
+from vyper import v
 
 
 def setup_logging():
@@ -39,24 +40,17 @@ def _setup_defaults():
     v.set_default('modes.instagram.refresh', 5)
     v.set_default('modes.instagram.update', 360)
 
-    v.set_default('brightness.default_mode', 'standard')
+    v.set_default('brightness.mode', 'standard')
     v.set_default('brightness.standard.default', 1)
     v.set_default('brightness.standard.increase_on_click', 2)
     v.set_default('brightness.standard.max', 16)
 
 
 def _setup_arguments():
-    _setup_default_arguments()
-
-    fp = FlagsProvider()
-    fp.add_argument('-p', type=str, help='Config location path')
-    fp.add_argument('-f', type=str, help='Config file name (without .yml extension)')
-    v.bind_flags(fp, sys.argv)
-
-
-def _setup_default_arguments():
-    v.set_default('p', './config')
-    v.set_default('f', 'config')
+    ap = argparse.ArgumentParser()
+    ap.add_argument('-p', type=str, help='Config location path', default='./config')
+    ap.add_argument('-f', type=str, help='Config file name (without .yml extension)', default='config')
+    v.bind_args(ap)
 
 
 def _setup_file():
@@ -200,11 +194,11 @@ def _validate_config():
             "brightness": {
                 "type": "object",
                 "properties": {
-                    "default_mode": {"type": "string", "enum": ["standard", "time_dependent"]}
+                    "mode": {"type": "string", "enum": ["standard", "time_dependent"]}
                 },
                 "if": {
                     "properties": {
-                        "default_mode": {"enum": ['standard']}
+                        "mode": {"enum": ['standard']}
                     }
                 },
                 "then": {
@@ -227,20 +221,20 @@ def _validate_config():
                         "time_dependent": {
                             "type": "object",
                             "properties": {
-                                "hours": {
+                                "times": {
                                     "type": "array",
                                     "minItems": 2,
                                     "items": {
                                         "type": "object",
                                         "properties": {
-                                            "from": {"type": "string", "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"},
+                                            "from": {"type": "string", "pattern": "^([0-1][0-9]|[2][0-3]):[0-5][0-9]$"},
                                             "value": {"$ref": "#/definitions/brightness_level"}
                                         },
                                         "required": ["from", "value"]
                                     }
                                 }
                             },
-                            "required": ["hours"]
+                            "required": ["times"]
                         }
                     },
                     "required": ["time_dependent"]
@@ -358,8 +352,8 @@ class BrightnessCfg:
         self.standard = StandardCfg()
         self.time_dependent = TimeDependentCfg()
 
-    def get_default_mode(self):
-        return self._v.get_string('brightness.default_mode')
+    def get_mode(self):
+        return self._v.get_string('brightness.mode')
 
 
 class StandardCfg:
@@ -380,5 +374,5 @@ class TimeDependentCfg:
     def __init__(self):
         self._v = v
 
-    def get_hours(self):
-        return self._v.get('brightness.time_dependent.hours')
+    def get_times(self):
+        return self._v.get('brightness.time_dependent.times')
