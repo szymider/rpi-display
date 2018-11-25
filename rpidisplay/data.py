@@ -1,10 +1,8 @@
 import logging
-import threading
-import time
 from collections import OrderedDict
 
 import requests
-import schedule
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from rpidisplay import configuration
 from rpidisplay.weather_providers import OpenWeatherMap, DarkSky
@@ -17,23 +15,25 @@ class Data:
         self.instagram = None
         self._modes_cfg = configuration.ModesCfg()
         self._weather_provider = self._get_provider()
+        self._scheduler = BackgroundScheduler()
 
     def schedule_data_download(self):
         updateable_modes, download_modes = self._get_updateable_modes()
         for mode, enabled in updateable_modes.items():
             if enabled:
-                schedule.every(mode.get_update()).seconds.do(download_modes.pop(0))
+                update_job = download_modes.pop(0)
+                update_job()
+                self._scheduler.add_job(update_job, trigger='interval', seconds=mode.get_update())
 
-        if schedule.jobs:
-            schedule.run_all()
-            threading.Thread(target=self._run_continuously, daemon=True).start()
+        if self._scheduler.get_jobs():
+            self._scheduler.start()
         else:
             logging.info("No jobs to schedule")
 
-    def _run_continuously(self):
-        while True:
-            schedule.run_pending()
-            time.sleep(2)
+    def cleanup(self):
+        if self._scheduler.state:
+            self._scheduler.shutdown(wait=False)
+            logging.info('Data scheduler has been shutdown')
 
     def _get_provider(self):
         if not self._modes_cfg.weather.get_enable():

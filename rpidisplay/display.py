@@ -89,6 +89,7 @@ class Display:
     def _cleanup(self):
         self._buttons.cleanup_gpio()
         self._brightness.cleanup()
+        self._data.cleanup()
 
 
 class Mode:

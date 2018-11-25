@@ -66,8 +66,8 @@ class TimeDependent:
         pass
 
     def cleanup(self):
-        self._scheduler.shutdown()
-        logging.info('Shutdown scheduler')
+        self._scheduler.shutdown(wait=False)
+        logging.info('Time dependent mode scheduler has been shutdown')
 
     def _setup_scheduler(self):
         scheduler = BackgroundScheduler()
