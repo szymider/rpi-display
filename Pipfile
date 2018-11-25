@@ -13,7 +13,6 @@ ZeroSeg = {git = "https://github.com/aklimko/ZeroSeg.git", ref = "master", edita
 requests = "*"
 vyper-config = "*"
 spidev = "*"
-schedule = "*"
 "rpi.gpio" = "*"
 jsonschema = "==v3.0.0a3"
 apscheduler = "*"
