@@ -1,6 +1,5 @@
 import datetime
 import logging
-import sys
 import time
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -15,16 +14,11 @@ class Brightness:
         self._mode = self._get_mode()
 
     def _get_mode(self):
-        mode = None
-        cfg_mode = self._cfg.get_mode()
-        if cfg_mode == 'standard':
-            mode = Standard(self._device)
-        elif cfg_mode == 'time_dependent':
-            mode = TimeDependent(self._device)
-        else:
-            logging.error("Invalid brightness mode=%s", cfg_mode)
-            sys.exit(1)
-        return mode
+        modes = {
+            'standard': Standard,
+            'time_dependent': TimeDependent,
+        }
+        return modes[self._cfg.get_mode()](self._device)
 
     def on_click(self):
         self._mode.on_click()
