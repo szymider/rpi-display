@@ -46,7 +46,7 @@ class Standard:
 
     def _change_level(self):
         level_after_increase = self._level + self._increase_on_click
-        self._level = level_after_increase if level_after_increase <= self._max else 1
+        self._level = level_after_increase if level_after_increase <= self._max else 0
 
     def _set_brightness(self):
         self._device.brightness(self._level)
