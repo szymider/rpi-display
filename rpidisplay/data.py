@@ -18,12 +18,10 @@ class Data:
         self._scheduler = BackgroundScheduler()
 
     def schedule_data_download(self):
-        updateable_modes, download_modes = self._get_updateable_modes()
-        for mode, enabled in updateable_modes.items():
-            if enabled:
-                update_job = download_modes.pop(0)
-                update_job()
-                self._scheduler.add_job(update_job, trigger='interval', seconds=mode.get_update())
+        for mode, job in self._get_updateable_modes().items():
+            if mode.get_enable():
+                job()
+                self._scheduler.add_job(job, trigger='interval', seconds=mode.get_update())
 
         if self._scheduler.get_jobs():
             self._scheduler.start()
@@ -49,10 +47,10 @@ class Data:
 
     def _get_updateable_modes(self):
         updateable_modes = OrderedDict()
-        updateable_modes[self._modes_cfg.weather] = self._modes_cfg.weather.get_enable()
-        updateable_modes[self._modes_cfg.exchange_rate] = self._modes_cfg.exchange_rate.get_enable()
-        updateable_modes[self._modes_cfg.instagram] = self._modes_cfg.instagram.get_enable()
-        return updateable_modes, [self.update_weather, self.update_exchange_rate, self.update_instagram]
+        updateable_modes[self._modes_cfg.weather] = self.update_weather
+        updateable_modes[self._modes_cfg.exchange_rate] = self.update_exchange_rate
+        updateable_modes[self._modes_cfg.instagram] = self.update_instagram
+        return updateable_modes
 
     def update_weather(self):
         self.weather = self._weather_provider.download_data()
