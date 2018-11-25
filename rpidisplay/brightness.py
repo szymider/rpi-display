@@ -16,18 +16,21 @@ class Brightness:
 
     def _get_mode(self):
         mode = None
-        cfg_default_mode = self._cfg.get_mode()
-        if cfg_default_mode == 'standard':
+        cfg_mode = self._cfg.get_mode()
+        if cfg_mode == 'standard':
             mode = Standard(self._device)
-        elif cfg_default_mode == 'time_dependent':
+        elif cfg_mode == 'time_dependent':
             mode = TimeDependent(self._device)
         else:
-            logging.error("Invalid brightness mode=%s", cfg_default_mode)
+            logging.error("Invalid brightness mode=%s", cfg_mode)
             sys.exit(1)
         return mode
 
     def on_click(self):
         self._mode.on_click()
+
+    def cleanup(self):
+        self._mode.cleanup()
 
 
 class Standard:
@@ -43,6 +46,9 @@ class Standard:
     def on_click(self):
         self._change_level()
         self._set_brightness()
+
+    def cleanup(self):
+        pass
 
     def _change_level(self):
         level_after_increase = self._level + self._increase_on_click
@@ -63,6 +69,9 @@ class TimeDependent:
 
     def on_click(self):
         pass
+
+    def cleanup(self):
+        self._scheduler.shutdown()
 
     def _setup_scheduler(self):
         scheduler = BackgroundScheduler()
