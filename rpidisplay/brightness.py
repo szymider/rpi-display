@@ -72,6 +72,7 @@ class TimeDependent:
 
     def cleanup(self):
         self._scheduler.shutdown()
+        logging.info('Shutdown scheduler')
 
     def _setup_scheduler(self):
         scheduler = BackgroundScheduler()
@@ -93,6 +94,11 @@ class TimeDependent:
             if now >= datetime.time(hour=tf.tm_hour, minute=tf.tm_min):
                 value = t['value']
                 if self._level != value:
-                    self._device.brightness(value)
-                    self._level = value
-                break
+                    self._set_brightness(value)
+                return
+        latest_value = self._times[0]['value']
+        self._set_brightness(latest_value)
+
+    def _set_brightness(self, value):
+        self._device.brightness(value)
+        self._level = value
