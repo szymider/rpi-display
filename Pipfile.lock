@@ -198,11 +198,11 @@
         },
         "vyper-config": {
             "hashes": [
-                "sha256:4e5254303b1bf749b3177f4317ed7d9b78bb4eb1f1239fb4c48e788a5f6383d8",
-                "sha256:f2aecffbf93018ed4f5f01980dfc35dca072e0741b29cf1ff022c3121fa685cb"
+                "sha256:05903b4e74afdaeb813f2cc348c39d0af8c40bbf4a077a5bac6407879b65dcda",
+                "sha256:f9738ff9f36a9702cf9e3218b0f2e018fb19ced6d3b6ed1d364297e817ee8fda"
             ],
             "index": "pypi",
-            "version": "==0.3.1"
+            "version": "==0.3.2"
         },
         "watchdog": {
             "hashes": [
@@ -214,7 +214,7 @@
         "zeroseg": {
             "editable": true,
             "git": "https://github.com/aklimko/ZeroSeg.git",
-            "ref": "c1bb942fb879399c7b025d728a3fbeb8c1d5945e"
+            "ref": "28834ba6cf2fb72c02390ed7c971155fffb09115"
         }
     },
     "develop": {}
