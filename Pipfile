@@ -18,6 +18,7 @@ jsonschema = "==v3.0.0a3"
 apscheduler = "*"
 
 [dev-packages]
+pytest = "*"
 
 [requires]
 python_version = "3.5"
