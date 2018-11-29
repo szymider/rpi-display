@@ -61,7 +61,7 @@ def _setup_file():
     except FileNotFoundError:
         logging.info("Config file was not found")
     except OSError as e:
-        logging.warn(e)
+        logging.warning(e)
 
 
 def _validate_config():
