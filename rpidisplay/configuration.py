@@ -59,7 +59,8 @@ def validate_config():
         "title": "Config schema",
         "definitions": {
             "brightness_level": {"type": "number", "multipleOf": 1.0, "minimum": 0, "maximum": 15},
-            "not_empty_string": {"type": "string", "minLength": 1}
+            "not_empty_string": {"type": "string", "minLength": 1},
+            "currency_code": {"type": "string", "minLength": 3, "maxLength": 3},
         },
         "type": "object",
         "properties": {
@@ -141,8 +142,8 @@ def validate_config():
                                     "items": {
                                         "type": "object",
                                         "properties": {
-                                            "from": {"$ref": "#/definitions/not_empty_string"},
-                                            "to": {"$ref": "#/definitions/not_empty_string"}
+                                            "from": {"$ref": "#/definitions/currency_code"},
+                                            "to": {"$ref": "#/definitions/currency_code"}
                                         },
                                         "required": ["from", "to"]
                                     }
