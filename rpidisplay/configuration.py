@@ -1,7 +1,6 @@
 import logging
-import sys
 
-from jsonschema import validate, ValidationError
+from jsonschema import validate
 from vyper import v
 
 
@@ -225,11 +224,7 @@ def validate_config():
         }
     }
 
-    try:
-        validate(v.all_settings(), schema)
-    except ValidationError as e:
-        logging.error(".".join(x for x in e.path if isinstance(x, str)) + ": " + e.message)
-        sys.exit(0)
+    validate(v.all_settings(), schema)
 
 
 class ModesCfg:
