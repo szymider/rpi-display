@@ -1,0 +1,52 @@
+modes:
+  clock:
+    enable: true
+    refresh: 1
+  date:
+    enable: true
+    refresh: 5
+  weather:
+    enable: true
+    refresh: 5
+    update: 300
+    provider: OWM
+    unit: C
+    location: fake-weather-location
+    api_key: fake-weather-api-key
+  exchange_rate:
+    enable: true
+    refresh: 2
+    update: 300
+    types:
+      - from: eur
+        to: pln
+      - from: usd
+        to: pln
+  instagram:
+    enable: true
+    refresh: 5
+    update: 360
+    api_key: fake-instagram-api-key
+
+brightness:
+  mode: standard
+  standard:
+    default: 0
+    increase_on_click: 1
+    max: 15
+  time_dependent:
+    times:
+      - from: '01:49'
+        value: 1
+      - from: '02:42'
+        value: 2
+      - from: '02:43'
+        value: 3
+      - from: '06:00'
+        value: 4
+      - from: '10:30'
+        value: 5
+      - from: '20:25'
+        value: 6
+      - from: '23:50'
+        value: 7
