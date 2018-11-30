@@ -58,6 +58,7 @@ def validate_config():
         "title": "Config schema",
         "definitions": {
             "brightness_level": {"type": "number", "multipleOf": 1.0, "minimum": 0, "maximum": 15},
+            "brightness_increase": {"type": "number", "multipleOf": 1.0, "minimum": 1, "maximum": 15},
             "not_empty_string": {"type": "string", "minLength": 1},
             "currency_code": {"type": "string", "minLength": 3, "maxLength": 3},
         },
@@ -188,9 +189,8 @@ def validate_config():
                             "type": "object",
                             "properties": {
                                 "default": {"$ref": "#/definitions/brightness_level"},
-                                "increase_on_click": {"type": "number", "multipleOf": 1.0, "minimum": 1,
-                                                      "maximum": 15},
-                                "max": {"$ref": "#/definitions/brightness_level"}
+                                "increase_on_click": {"$ref": "#/definitions/brightness_increase"},
+                                "max": {"$ref": "#/definitions/brightness_increase"},
                             },
                             "required": ["default", "increase_on_click", "max"]
                         },
