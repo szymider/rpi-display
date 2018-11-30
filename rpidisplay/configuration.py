@@ -1,8 +1,6 @@
-import argparse
 import logging
-import sys
 
-from jsonschema import validate, ValidationError
+from jsonschema import validate
 from vyper import v
 
 
@@ -12,12 +10,9 @@ def setup_logging():
                         level=logging.INFO)
 
 
-def setup_config():
+def setup_config(path, file_name):
     _setup_defaults()
-    _setup_arguments()
-    _setup_file()
-
-    _validate_config()
+    _setup_file(path, file_name)
 
 
 def _setup_defaults():
@@ -39,22 +34,15 @@ def _setup_defaults():
     v.set_default('modes.instagram.update', 360)
 
     v.set_default('brightness.mode', 'standard')
-    v.set_default('brightness.standard.default', 1)
-    v.set_default('brightness.standard.increase_on_click', 2)
-    v.set_default('brightness.standard.max', 16)
+    v.set_default('brightness.standard.default', 0)
+    v.set_default('brightness.standard.increase_on_click', 3)
+    v.set_default('brightness.standard.max', 15)
 
 
-def _setup_arguments():
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-p', type=str, help='Config location path', default='./config')
-    ap.add_argument('-f', type=str, help='Config file name (without .yml extension)', default='config')
-    v.bind_args(ap)
-
-
-def _setup_file():
-    v.set_config_name(v.get_string('f'))
+def _setup_file(path, name):
+    v.add_config_path(path)
+    v.set_config_name(name)
     v.set_config_type('yaml')
-    v.add_config_path(v.get_string('p'))
 
     try:
         v.read_in_config()
@@ -64,12 +52,13 @@ def _setup_file():
         logging.warning(e)
 
 
-def _validate_config():
+def validate_config():
     schema = {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Config schema",
         "definitions": {
             "brightness_level": {"type": "number", "multipleOf": 1.0, "minimum": 0, "maximum": 15},
+            "brightness_increase": {"type": "number", "multipleOf": 1.0, "minimum": 1, "maximum": 15},
             "not_empty_string": {"type": "string", "minLength": 1},
             "currency_code": {"type": "string", "minLength": 3, "maxLength": 3},
         },
@@ -200,9 +189,8 @@ def _validate_config():
                             "type": "object",
                             "properties": {
                                 "default": {"$ref": "#/definitions/brightness_level"},
-                                "increase_on_click": {"type": "number", "multipleOf": 1.0, "minimum": 1,
-                                                      "maximum": 15},
-                                "max": {"$ref": "#/definitions/brightness_level"}
+                                "increase_on_click": {"$ref": "#/definitions/brightness_increase"},
+                                "max": {"$ref": "#/definitions/brightness_increase"},
                             },
                             "required": ["default", "increase_on_click", "max"]
                         },
@@ -236,11 +224,7 @@ def _validate_config():
         }
     }
 
-    try:
-        validate(v.all_settings(), schema)
-    except ValidationError as e:
-        logging.error(".".join(x for x in e.path if isinstance(x, str)) + ": " + e.message)
-        sys.exit(0)
+    validate(v.all_settings(), schema)
 
 
 class ModesCfg:
