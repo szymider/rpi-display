@@ -4,11 +4,6 @@ from jsonschema import ValidationError
 from rpidisplay import configuration
 
 
-@pytest.fixture
-def load_config():
-    configuration.setup_config('./tests/config', 'config-test')
-
-
 def test_default_config_without_file():
     configuration.validate_config()
 
