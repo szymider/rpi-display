@@ -10,9 +10,8 @@ class Buttons:
         self._mode = mode
         self._brightness = brightness
         self._display_responsive_event = responsive_event
-        self._setup_gpio()
 
-    def _setup_gpio(self):
+    def setup_gpio(self):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self._left, GPIO.IN)
         GPIO.setup(self._right, GPIO.IN)

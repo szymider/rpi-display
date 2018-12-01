@@ -5,6 +5,7 @@ import time
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from rpidisplay import configuration
+from rpidisplay import datetime_provider
 
 
 class Brightness:
@@ -19,6 +20,9 @@ class Brightness:
             'time_dependent': TimeDependent,
         }
         return modes[self._cfg.get_mode()](self._device)
+
+    def start(self):
+        self._mode.start()
 
     def on_click(self):
         self._mode.on_click()
@@ -35,6 +39,8 @@ class Standard:
         self._increase_on_click = self._cfg.get_increase_on_click()
         self._max = self._cfg.get_max()
         self._level = self._default
+
+    def start(self):
         self._device.brightness(self._level)
 
     def on_click(self):
@@ -57,8 +63,12 @@ class TimeDependent:
     def __init__(self, device):
         self._device = device
         self._cfg = configuration.BrightnessCfg().time_dependent
+        self._datetime_provider = datetime_provider
         self._times = self._convert_times()
         self._level = None
+        self._scheduler = None
+
+    def start(self):
         self._watch_times()
         self._scheduler = self._setup_scheduler()
 
@@ -83,7 +93,7 @@ class TimeDependent:
         return times
 
     def _watch_times(self):
-        now = datetime.datetime.now().time()
+        now = self._datetime_provider.get_current_time()
         for t in self._times:
             tf = t['from']
             if now >= datetime.time(hour=tf.tm_hour, minute=tf.tm_min):
