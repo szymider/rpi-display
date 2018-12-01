@@ -1,4 +1,3 @@
-from datetime import datetime
 from itertools import cycle
 from threading import Event
 
@@ -7,6 +6,7 @@ import ZeroSeg.led as led
 from rpidisplay import brightness
 from rpidisplay import buttons
 from rpidisplay import configuration
+from rpidisplay import datetime_provider
 
 
 class Display:
@@ -24,6 +24,9 @@ class Display:
         self._no_data_text = "NO DATA"
 
     def start(self):
+        self._brightness.start()
+        self._buttons.setup_gpio()
+
         try:
             while True:
                 while not self._change_mode_event.is_set():
@@ -36,12 +39,12 @@ class Display:
             self._cleanup()
 
     def _clock(self):
-        time = datetime.now().time()
+        time = datetime_provider.get_current_time()
         self._device.write_text(1, " {:%H%M%S}".format(time), dots=(3, 5))
         self._change_mode_event.wait(self._clock_cfg.get_refresh())
 
     def _date(self):
-        date = datetime.now().date()
+        date = datetime_provider.get_current_date()
         self._device.write_text(1, "{:%d-%m-%y}".format(date))
         self._change_mode_event.wait(self._modes_cfg.date.get_refresh())
 
