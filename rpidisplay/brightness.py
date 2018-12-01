@@ -89,14 +89,13 @@ class TimeDependent:
         time_format = '%H:%M'
         times = sorted(self._cfg.get_times(), key=lambda x: time.strptime(x['from'], time_format), reverse=True)
         for t in times:
-            t['from'] = time.strptime(t['from'], time_format)
+            t['from'] = datetime.datetime.strptime(t['from'], time_format).time()
         return times
 
     def _watch_times(self):
         now = self._datetime_provider.get_current_time()
         for t in self._times:
-            tf = t['from']
-            if now >= datetime.time(hour=tf.tm_hour, minute=tf.tm_min):
+            if now >= t['from']:
                 value = t['value']
                 if self._level != value:
                     self._set_brightness(value)
