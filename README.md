@@ -1,6 +1,6 @@
 # rpi-display 
 [![Build Status](https://travis-ci.org/aklimko/rpi-display.svg?branch=master)](https://travis-ci.org/aklimko/rpi-display)
-![Python Version](https://img.shields.io/badge/python-3.5-blue.svg)
+[![Python Version](https://img.shields.io/badge/python-3.5-blue.svg)](#)
 
 **rpi-display** shows daily useful info such as current time, date, weather, exchange rates and Instagram followers.
 <p align="center">
@@ -24,14 +24,12 @@ In case you don't have pipenv installed:
 pip3 install pipenv
 ```
 
-Next run program:
+Run program:
 ```bash
 pipenv run python main.py
 ```
 
 #### Command line arguments
-Arguments list
-
 | Argument |           Description           |  Default |
 |:--------:|:-------------------------------:|:--------:|
 | -p       | Config location path            | ./config |
