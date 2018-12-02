@@ -1,6 +1,3 @@
-startup:
-  show_ip: true
-
 modes:
   clock:
     enable: true
@@ -9,39 +6,34 @@ modes:
     enable: true
     refresh: 5
   weather:
-    enable: true
+    enable: false
     refresh: 5
     update: 300
-    provider: 'owm'
-    unit: 'C'
-    location: ''
-    api_key: ''
+    provider: OWM
+    unit: C
+    location:
+    api_key:
   exchange_rate:
-    enable: true
+    enable: false
     update: 300
     types:
-      - from: eur
-        to: pln
-      - from: usd
-        to: pln
-      - from: eur
-        to: usd
+      - from: EUR
+        to: USD
   instagram:
-    enable: true
+    enable: false
     refresh: 5
     update: 360
-    api_key: ''
+    api_key:
 
 brightness:
-  default_mode: 'standard'
+  mode: standard
   standard:
-    default: 1
-    increase_on_click: 2
-    max: 5
+    default: 0
+    increase_on_click: 1
+    max: 15
   time_dependent:
-    hours:
-      7: 1
-      11: 2
-      15: 3
-      18: 2
-      24: 1
+    times:
+      - from: '08:30'
+        value: 2
+      - from: '20:00'
+        value: 0
