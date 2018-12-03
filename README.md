@@ -1,6 +1,6 @@
 # rpi-display 
 [![Build Status](https://travis-ci.org/aklimko/rpi-display.svg?branch=master)](https://travis-ci.org/aklimko/rpi-display)
-[![Python Version](https://img.shields.io/badge/python-3.5-blue.svg)](#)
+[![Python Version](https://img.shields.io/badge/python-3.5-blue.svg)](#rpi-display)
 
 **rpi-display** shows daily useful info such as current time, date, weather, exchange rates and Instagram followers.
 <p align="center">
@@ -36,7 +36,7 @@ pipenv run python main.py
 | -f       | Config file name (without .yml) | config   |
 
 
-Running this will try to find config file `./config/my-special-config.yml`
+Running program with these arguments will cause loading config file `./config/my-special-config.yml`:
 ```bash
 pipenv run python main.py -p ./config -f my-special-config
 ```
