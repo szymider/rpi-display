@@ -17,7 +17,7 @@ def setup_config(path, file_name):
 
 def _setup_defaults():
     v.set_default('modes.clock.enable', True)
-    v.set_default('modes.clock.refresh', 0.995)
+    v.set_default('modes.clock.refresh', 1)
 
     v.set_default('modes.date.enable', True)
     v.set_default('modes.date.refresh', 5)
@@ -31,11 +31,11 @@ def _setup_defaults():
 
     v.set_default('modes.instagram.enable', False)
     v.set_default('modes.instagram.refresh', 5)
-    v.set_default('modes.instagram.update', 360)
+    v.set_default('modes.instagram.update', 300)
 
     v.set_default('brightness.mode', 'standard')
     v.set_default('brightness.standard.default', 0)
-    v.set_default('brightness.standard.increase_on_click', 3)
+    v.set_default('brightness.standard.increase_on_click', 1)
     v.set_default('brightness.standard.max', 15)
 
 
