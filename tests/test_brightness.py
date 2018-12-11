@@ -2,8 +2,8 @@ import pytest
 
 from rpidisplay.brightness import Standard
 from rpidisplay.brightness import TimeDependent
-from tests import fake_datetime_provider
-from tests import fake_device
+from tests.mocks import fake_datetime_provider
+from tests.mocks import fake_device
 
 
 @pytest.mark.usefixtures("load_config")
