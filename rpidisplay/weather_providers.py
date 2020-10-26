@@ -7,7 +7,7 @@ from rpidisplay import configuration
 
 class OpenWeatherMap:
     def __init__(self):
-        self._url = 'http://api.openweathermap.org/data/2.5/weather?id={}&units={}&appid={}'
+        self._url = 'http://api.openweathermap.org/data/2.5/weather?id=New York&appid=5c4014c79199970216bf8aac570511dd'
         self._weather_cfg = configuration.WeatherCfg()
 
     def download_data(self):
