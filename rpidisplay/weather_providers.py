@@ -2,7 +2,6 @@ import logging
 
 import requests
 
-from rpidisplay import configuration.py
 
 
 class OpenWeatherMap:
